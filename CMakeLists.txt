@@ -70,6 +70,17 @@ target_link_libraries(uskin_driver -lGinkgo_Driver)
 target_include_directories(uskin_driver PUBLIC
   ${PROJECT_SOURCE_DIR}/include/uskin
 )
+# realsense
+add_library(camera_driver SHARED
+  src/realsense/camera_driver.cpp
+  src/realsense/shared_variable.cpp
+  src/realsense/camera_thread.cpp
+)
+find_package(OpenCV REQUIRED)
+target_link_libraries(camera_driver ${OpenCV_LIBS} -lopencv_aruco -lrealsense2)
+target_include_directories(camera_driver PUBLIC
+  ${PROJECT_SOURCE_DIR}/include/realsense
+)
 
 ############################################################################
 # ==>> Create an executable
@@ -95,6 +106,11 @@ add_executable(ur5e_bin
   src/ur5e_controller/ur5e_main.cpp
 )
 target_link_libraries(ur5e_bin miniros_lib ur5e_driver)
+# camera_bin
+add_executable(camera_bin
+  src/realsense/camera_main.cpp
+)
+target_link_libraries(camera_bin miniros_lib camera_driver)
 
 # master
 add_executable(main
@@ -102,6 +118,8 @@ add_executable(main
   src/master/wsg_thread.cpp
   src/master/uskin_thread.cpp
 )
-target_link_libraries(main miniros_lib wsg_driver uskin_driver ur5e_driver)
+target_link_libraries(main
+  miniros_lib wsg_driver uskin_driver ur5e_driver camera_driver
+)
 
 

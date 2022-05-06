@@ -18,7 +18,7 @@ void uskin_controller(){
     return;
   };
   time = get_current_time();
-  ROS_INFO("[%Lf] Uskin controller is Ready!", time);
+  ROS_INFO("[%Lf] Uskin thread is Ready!", time);
 
   /* 等待线程同步 */
   t = threadmanager.wait_for_syc();

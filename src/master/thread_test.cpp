@@ -17,7 +17,7 @@ void wsg_controller(){
 
   /* 等待线程同步 */
   t = threadmanager.wait_for_syc();
-  time = GetCurrentTime();
+  time = get_current_time();
   printf("Thread start at: %Lf\n", time);
 
   /* 开始伺服周期 */
@@ -31,7 +31,7 @@ void wsg_controller(){
     }
 
     /* calculate next shot | 设置下一个线程恢复的时间 */
-    t.tv_nsec += NSEC_PER_PERIOD;
+    t.tv_nsec += WSG_PERIOD;
     // 时间进位
     while (t.tv_nsec >= NSEC_PER_SEC) {
       t.tv_nsec -= NSEC_PER_SEC;

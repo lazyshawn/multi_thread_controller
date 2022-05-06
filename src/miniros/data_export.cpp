@@ -47,7 +47,7 @@ void Recorder::data_export(std::string fname) {
   file.open(path);
   if(!file.is_open()){printf("Open file failed. -- %s\n", fname.c_str());}
   // 写入数据
-  for (int i=0; i<dataMat.size(); ++i) {
+  for (int i=0; i<itemIndex; ++i) {
     file << std::left;
     for (int j=0; j<dataMat[0].size(); ++j) {
       file << std::setw(len) << dataMat[i][j];

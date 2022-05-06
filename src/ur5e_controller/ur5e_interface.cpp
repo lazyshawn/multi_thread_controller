@@ -9,7 +9,7 @@ void go_to_joint(THETA joint, double time) {
   THETA jntCmd=std::vector<double>(6), origJoint = urConfig.get_state();
   double prop, dt;
   bool finish = false;
-  prop = dt = SERVO_TIME / time;
+  prop = dt = UR_SERVO_TIME / time;
   while (!finish) {
     finish = traj_interpolate(origJoint, joint, prop, jntCmd);
     urConfig.push(jntCmd);

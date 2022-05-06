@@ -11,7 +11,7 @@ void wsg_controller(){
   WSGGripper gripper("10.249.180.222", 1000);
   WSGCMD cmd = {0,0};
   time = get_current_time();
-  ROS_INFO("[%Lf] WSG controller is Ready!", time);
+  ROS_INFO("[%Lf] WSG thread is Ready!", time);
 
   /* 等待线程同步 */
   t = threadmanager.wait_for_syc();
