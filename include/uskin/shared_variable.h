@@ -3,7 +3,7 @@
 #include <vector>
 #include <queue>
 
-#include "miniros/thread_manager.h"
+#include "miniros/miniros.h"
 
 // 封装共享数据的类
 class Force {

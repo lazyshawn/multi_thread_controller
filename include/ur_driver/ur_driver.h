@@ -9,7 +9,7 @@
 #include "ur_communication.h"
 #include "ur_communication_RT.h"
 #include <condition_variable>
-#include <math.h>
+#include <cmath>
 #include <mutex>
 #include <netinet/in.h>
 #include <string>

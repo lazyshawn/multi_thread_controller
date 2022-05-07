@@ -1,7 +1,6 @@
-#include "master/uskin_thread.h"
+#include "uskin/uskin_thread.h"
 
-extern ThreadManager threadmanager;
-extern Force force;
+Force force;
 
 /*************************************************************************
 * @func : sensor_thread_function;

@@ -57,6 +57,7 @@ target_include_directories(ur5e_driver PUBLIC
 add_library(wsg_driver SHARED
   src/wsg_controller/wsg_driver.cpp
   src/wsg_controller/shared_variable.cpp
+  src/wsg_controller/wsg_thread.cpp
 )
 target_include_directories(wsg_driver PUBLIC
   ${PROJECT_SOURCE_DIR}/include/wsg_controller
@@ -65,6 +66,7 @@ target_include_directories(wsg_driver PUBLIC
 add_library(uskin_driver SHARED
   src/uskin/sensor_driver.cpp
   src/uskin/shared_variable.cpp
+  src/uskin/uskin_thread.cpp
 )
 target_link_libraries(uskin_driver -lGinkgo_Driver)
 target_include_directories(uskin_driver PUBLIC
@@ -115,8 +117,7 @@ target_link_libraries(camera_bin miniros_lib camera_driver)
 # master
 add_executable(main
   src/master/main.cpp
-  src/master/wsg_thread.cpp
-  src/master/uskin_thread.cpp
+  src/master/interface.cpp
 )
 target_link_libraries(main
   miniros_lib wsg_driver uskin_driver ur5e_driver camera_driver

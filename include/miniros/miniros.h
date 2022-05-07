@@ -16,4 +16,6 @@ namespace miniROS {
   void shutdown();
 }
 
+extern ThreadManager threadmanager;
+
 #endif

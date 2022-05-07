@@ -1,5 +1,5 @@
 #include "miniros/miniros.h"
-#include "ur5e_controller/ur5e_thread.h"
+#include "ur5e_controller/ur5e_interface.h"
 
 extern UrConfig urConfig;
 ThreadManager threadmanager(1);
@@ -17,10 +17,10 @@ int main(int argc, char** argv) {
     int key = scanKeyboard();
     switch (key) {
       case 'g':
-        go_to_joint(off_angle, 3);
+        ur5e::go_to_joint(off_angle, 3);
         break;
       case 'h':
-        go_to_joint(ori_angle, 3);
+        ur5e::go_to_joint(ori_angle, 3);
         break;
       case 27: case 'q':
         miniROS::shutdown();

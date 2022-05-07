@@ -1,6 +1,5 @@
-#include "master/wsg_thread.h"
+#include "wsg_controller/wsg_thread.h"
 
-extern ThreadManager threadmanager;
 WSGConfig wsgConfig;
 
 /* 夹爪线程 */

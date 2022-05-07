@@ -2,6 +2,7 @@
 #include "uskin/sensor_driver.h"
 #include "uskin/shared_variable.h"
 
+ThreadManager threadmanager(1);
 Uskin forceSensor;
 extern Force force;
 

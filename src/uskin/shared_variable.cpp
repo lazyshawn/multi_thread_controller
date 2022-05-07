@@ -1,7 +1,4 @@
-#include "miniros/miniros.h"
 #include "uskin/shared_variable.h"
-
-Force force;
 
 /*************************************************************************
 * @class: Force;

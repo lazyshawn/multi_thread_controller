@@ -264,8 +264,7 @@ Vec3d RotMat2AxisAngle(Mat3d rotMat) {
 }
 
 THETA ur_InverseKinematics(Mat4d tranMat, THETA curTheta) {
-  // std::array<double,6> qJoint;
-  THETA qJoint;
+  THETA qJoint = std::vector<double>(6,0);
   double c1, s1, c2, s2, c3, s3, c4, s4, c5, s5, c6, s6;
   double nx, ny, nz, ox, oy, oz, ax, ay, az, px, py, pz, temp1, temp2;
   nx = tranMat(0,0);  ox = tranMat(0,1);  ax = tranMat(0,2);  px = tranMat(0,3);

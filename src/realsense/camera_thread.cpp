@@ -1,8 +1,6 @@
 #include "realsense/camera_thread.h"
 
-extern ThreadManager threadmanager;
 ObjState objState;
-
 Camera cameraOnHand("817612070676");
 Recorder cameraRecord(7);
 

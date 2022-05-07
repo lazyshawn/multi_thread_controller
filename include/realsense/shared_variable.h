@@ -1,7 +1,7 @@
 #pragma once
 
-#include "miniros/thread_manager.h"
-#include "camera_driver.h"
+#include "miniros/miniros.h"
+#include <eigen3/Eigen/Dense>
 
 typedef Eigen::Matrix<double,4,4> Mat4d;
 

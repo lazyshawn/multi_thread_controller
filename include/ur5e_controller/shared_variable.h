@@ -1,6 +1,7 @@
 #pragma  once
 
 #include <queue>
+#include "miniros/miniros.h"
 #include "ur5e_kinematics.h"
 
 class UrConfig {

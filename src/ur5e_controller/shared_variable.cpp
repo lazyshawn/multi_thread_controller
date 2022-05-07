@@ -1,7 +1,5 @@
 #include "ur5e_controller/shared_variable.h"
 
-UrConfig urConfig;
-
 UrConfig::UrConfig(){}
 
 /* 添加后续路径 */

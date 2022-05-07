@@ -1,6 +1,8 @@
 #include "miniros/miniros.h"
 #include "wsg_controller/wsg_driver.h"
 
+ThreadManager threadmanager(1);
+
 int main(int argc, char** argv) {
   WSGGripper gripper("10.249.180.222", 1000);
   gripper.home(1);

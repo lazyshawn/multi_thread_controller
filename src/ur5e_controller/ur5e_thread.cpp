@@ -1,8 +1,6 @@
 #include "ur5e_controller/ur5e_thread.h"
 
-extern ThreadManager threadmanager;
-extern UrConfig urConfig;
-
+UrConfig urConfig;
 Recorder urRecord(7);
 
 /*************************************************************************
@@ -37,14 +35,10 @@ void ur5e_controller() {
 
     /* 伺服线程主程序 */
     // 每个伺服周期开始的时间
-    time = get_current_time() - startTime;
-    urRecord.push_item(std::vector<double>(1, time));
+    // time = get_current_time() - startTime;
     // 读取机械臂关节角位置
     jointState = ur.rt_interface_->robot_state_->getQActual();
     urConfig.update_state(jointState);
-    urRecord.push_item(jointState);
-    urRecord.data_record();
-    urRecord.flag_reset();
     // 弹出路径并发送 servoj 指令
     if (urConfig.pop(refJoint)) {
       // 急停保护
@@ -57,7 +51,6 @@ void ur5e_controller() {
         }
       }
       ur.servoj(refJoint);
-      urRecord.flag_set();
     }
 
     /* calculate next shot | 设置下一个线程恢复的时间 */
@@ -65,6 +58,5 @@ void ur5e_controller() {
     // 时间进位
     time_wrap(ts);
   } // while (1)
-  urRecord.data_export("jointState.txt");
 }
 
