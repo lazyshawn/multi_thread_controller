@@ -6,7 +6,6 @@ ThreadManager threadmanager(1);
 int main(int argc, char** argv) {
   /* 开启线程 */
   std::vector<std::thread> threadPool;
-  std::thread uskinThread, wsgThread, urThread;
   // threadPool.push_back(std::thread(wsg_controller));
   // threadPool.push_back(std::thread(uskin_controller));
   threadPool.push_back(std::thread(ur5e_controller));

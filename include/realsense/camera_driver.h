@@ -31,6 +31,7 @@ public:
   Camera(std::string serialNum);
   ~Camera();
 
+  void auto_active();
   /* 标定相关的变量与函数 */
   // 标定图片储存文件夹
   std::string calibrationDir = "../build/calibration/";

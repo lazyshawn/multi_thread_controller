@@ -12,8 +12,13 @@ Notation:
 <!-- The format is based on Keep a [Changelog](https://keepachangelog.com/en/1.0.0/). -->
 
 ## ✨ Logs
-### 220507
+### 220508
 > commit [](
+)
+1. `fix`: 修复了不连接相机时程序卡在预加载的问题。将相机初始化放入线程内。
+
+### 220507
+> commit [7b1fb68](
 )
 1. `fix`: 修改了目前程序中出现的`zsh: segmentation fault (core dumped)`问题。该
    问题大部分原因是由于数组越界导致的，本次是因为将`THETA`改为`std::vector`后在

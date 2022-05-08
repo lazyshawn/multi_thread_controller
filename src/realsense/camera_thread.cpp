@@ -1,7 +1,7 @@
 #include "realsense/camera_thread.h"
 
 ObjState objState;
-Camera cameraOnHand("817612070676");
+Camera cameraOnHand;
 Recorder cameraRecord(7);
 
 /*************************************************************************
@@ -19,6 +19,7 @@ void camera_controller() {
   //   -0.0359439, -0.9993594, 0.0026104, 82,
   //   0.0340151,  0.0013871, 0.9994293, 26,
   //   0, 0, 0, 1;
+  new (&cameraOnHand) Camera("817612070676");
   cameraOnHand.set_extrMat(cam2elk);
   Camera camera = cameraOnHand;
   cv::VideoWriter outputVideo = camera.create_recorder();

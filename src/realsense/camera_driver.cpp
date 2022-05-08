@@ -4,17 +4,7 @@
  * @class: Camera
 *************************************************************************/
 /* **************** 构造函数 **************** */
-Camera::Camera(){
-  // Create librealsense context for managing devices
-  rs2::context ctx;
-  auto &&dev = ctx.query_devices();
-  std::string serialNum =  dev[0].get_info(RS2_CAMERA_INFO_SERIAL_NUMBER);
-  std::cout << "\nSerial num is not specifiled. Use the first one" << std::endl;
-  for (int i=0; i<dev.size(); ++i) {
-      std::cout << dev[i].get_info(RS2_CAMERA_INFO_SERIAL_NUMBER) << std::endl;
-  }
-  new(this) Camera(serialNum);
-}
+Camera::Camera() {}
 
 // 按序列号激活相机
 Camera::Camera(std::string serialNum){
@@ -37,6 +27,20 @@ Camera::Camera(std::string serialNum){
 /* **************** 析构函数 **************** */
 Camera::~Camera(){
   // pipe.stop();
+}
+
+void Camera::auto_active() {
+  // Create librealsense context for managing devices
+  rs2::context ctx;
+  auto &&dev = ctx.query_devices();
+  std::string serialNum =  dev[0].get_info(RS2_CAMERA_INFO_SERIAL_NUMBER);
+  std::cout << "\nSerial num is not specifiled. Use the first one" << std::endl;
+  for (int i=0; i<dev.size(); ++i) {
+      std::cout << dev[i].get_info(RS2_CAMERA_INFO_SERIAL_NUMBER) << std::endl;
+  }
+  // c++中定义了一个类的对象之后，还能再调用对象的构造函数吗? - 夏之幻想的回答
+  // https://www.zhihu.com/question/365133268/answer/968623573
+  new(this) Camera(serialNum);
 }
 
 /* **************** 获取一帧彩色图像 **************** */
