@@ -10,19 +10,19 @@ Camera::Camera() {}
 Camera::Camera(std::string serialNum){
   cfg.enable_device(serialNum);
   cfg.enable_stream(RS2_STREAM_COLOR, 640, 480, RS2_FORMAT_BGR8, 30);
-  cfg.enable_stream(RS2_STREAM_DEPTH, 640, 480, RS2_FORMAT_Z16, 30);
+  // cfg.enable_stream(RS2_STREAM_DEPTH, 640, 480, RS2_FORMAT_Z16, 30);
 
   // 启动设备的管道配置文件, 开始传送数据流
   selection = pipe.start(cfg);
 
   // 读取内参
-  auto stream = selection.get_stream(RS2_STREAM_DEPTH).as<rs2::video_stream_profile>();
+  auto stream = selection.get_stream(RS2_STREAM_COLOR).as<rs2::video_stream_profile>();
   intr = stream.get_intrinsics(); // Calibration data
 
   // 初始化默认外参
   extrMat << 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1;
   set_extrMat(extrMat);
-  pipe.stop();
+  // pipe.stop();
 }
 
 /* **************** 析构函数 **************** */
@@ -46,13 +46,11 @@ void Camera::auto_active() {
 
 /* **************** 获取一帧彩色图像 **************** */
 cv::Mat Camera::get_color_frame() {
-  pipe.start(cfg);
   frames = pipe.wait_for_frames(); // 等待下一帧
   color_frame = frames.get_color_frame();
   // 创建Opencv类,并传入数据
   cv::Mat color(cv::Size(640, 480), CV_8UC3, (void *)color_frame.get_data(),
             cv::Mat::AUTO_STEP);
-  pipe.stop();
   return color;
 }
 

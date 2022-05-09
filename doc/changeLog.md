@@ -12,8 +12,14 @@ Notation:
 <!-- The format is based on Keep a [Changelog](https://keepachangelog.com/en/1.0.0/). -->
 
 ## ✨ Logs
-### 220508
+### 220509
 > commit [](
+)
+1. `fix`: 解决了 Realsense 程序中 `pipe.start()` 后 CPU 占用率高的问题。这是
+   Realsense 库的安装问题。
+
+### 220508
+> commit [9cec07b](
 )
 1. `perf`: 优化了线程同步函数。普通线程也可以与伺服线程同步启动。
 

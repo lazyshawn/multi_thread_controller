@@ -26,7 +26,7 @@ void camera_controller() {
   // 完成初始化
   time = get_current_time();
   pid_t cameraPid = get_tid();
-  ROS_INFO("T[%Lf] P[%d] Realsense thread is Ready!", time, cameraPid);
+  ROS_INFO("P[%d] T[%Lf] Realsense thread is Ready!", time, cameraPid);
 
   /* 等待线程同步 */
   ts = threadmanager.wait_for_syc();
@@ -46,10 +46,10 @@ void camera_controller() {
     outputVideo << color;
     // 检测 Marker 在 elk 下的位姿
     camera.detect_marker(color, 14, 120, objStateData.obj2elk);
-    objState.update(&objStateData);
+    // objState.update(&objStateData);
     /* 记录数据 */
     cameraRecord.data_record();
-    // crmeraRecord.flag_reset();
+    // cameraRecord.flag_reset();
 
     /* calculate next shot | 设置下一个线程恢复的时间 */
     ts.tv_nsec += CAMERA_PERIOD;
