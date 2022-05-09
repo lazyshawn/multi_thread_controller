@@ -96,7 +96,7 @@ THETA plane_jacobian(Vec3d twist, float time);
  * @param: 旋转矩阵(ori_hnd);
  * @return: 末端位姿向量(6x1)
 *************************************************************************/
-int ur_kinematics(Mat4d& tranMat);
+int ur_kinematics(THETA jointState, Mat4d& tranMat);
 
 /*************************************************************************
  * @brief: 计算从关节空间到笛卡尔空间的雅克比矩阵，及其逆矩阵、转置矩阵

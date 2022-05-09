@@ -53,6 +53,5 @@ public:
   void pixel_to_point(float* point3d, float* pixel, float depth);
   // 检测 Marker 位姿
   int detect_marker(cv::Mat frame, int id, float depth, Eigen::Matrix<double,4,4>& markerPose);
-
 };
 

@@ -66,7 +66,7 @@ THETA plane_invese_kinematics(std::array<double,3>& state) {
 THETA plane_jacobian(Vec3d twist) {
   Mat3d jcb;
   Vec3d q234;
-  THETA dq;
+  THETA dq = std::vector<double>(6,0);
   jcb(0,0) = jcb(0,1) = jcb(0,2) = -1;
   jcb(1,2) = -82.3             ; jcb(2,2) = 94.65;              // jcb4
   jcb(1,1) = jcb(1,2)+392.25*c4; jcb(2,1) = jcb(2,2)-392.25*s4; // jcb3
@@ -83,7 +83,8 @@ THETA plane_jacobian(Vec3d twist) {
  * @param: MATRIX_D rx_h - 旋转矩阵;
  * @return: 末端位姿向量(6x1)
 *************************************************************************/
-int ur_kinematics(Mat4d& tranMat) {
+int ur_kinematics(THETA jointState, Mat4d& tranMat) {
+  calcJnt(jointState);
   double hori, vert;
 
   hori = DH_D4 + DH_D6*c5;

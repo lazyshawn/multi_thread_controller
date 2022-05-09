@@ -2,13 +2,10 @@
 #include "realsense/camera_thread.h"
 
 ThreadManager threadmanager(1);
-extern ObjState objState;
-extern Camera camera;
 
 int main(int argc, char** argv) {
   double time;
   std::vector<std::thread> threadPool;
-  std::thread urThread;
   threadPool.push_back(std::thread(camera_controller));
 
   while (miniROS::OK()) {

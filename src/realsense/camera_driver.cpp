@@ -22,6 +22,7 @@ Camera::Camera(std::string serialNum){
   // 初始化默认外参
   extrMat << 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1;
   set_extrMat(extrMat);
+  pipe.stop();
 }
 
 /* **************** 析构函数 **************** */
@@ -45,11 +46,13 @@ void Camera::auto_active() {
 
 /* **************** 获取一帧彩色图像 **************** */
 cv::Mat Camera::get_color_frame() {
+  pipe.start(cfg);
   frames = pipe.wait_for_frames(); // 等待下一帧
   color_frame = frames.get_color_frame();
   // 创建Opencv类,并传入数据
   cv::Mat color(cv::Size(640, 480), CV_8UC3, (void *)color_frame.get_data(),
             cv::Mat::AUTO_STEP);
+  pipe.stop();
   return color;
 }
 
@@ -123,7 +126,7 @@ int Camera::detect_marker(cv::Mat frame, int id, float depth, Eigen::Matrix<doub
     if (i == ids.size()-1) return 0;
   }
 
-  frame.copyTo(frame_show); //复制一份
+  // frame.copyTo(frame_show); //复制一份
   // 如果有，则标记出来，放入另一个Mat
   // cv::aruco::drawDetectedMarkers(frame_show, marker, ids);
   // imshow("detected", frame_show);

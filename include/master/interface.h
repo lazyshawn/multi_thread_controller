@@ -6,6 +6,7 @@
 #include "ur5e_controller/ur5e_interface.h"
 #include "realsense/camera_thread.h"
 
+void main_menu();
 void devices_home();
 void pick_and_place(double hoverHeight);
 

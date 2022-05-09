@@ -10,7 +10,6 @@ public:
   struct Data {
     Mat4d obj2elk;
     bool flag = false;
-    Eigen::Matrix<double,4,4> markerPose;
   };
   Data get_data(void);
   void update(Data* Data_);

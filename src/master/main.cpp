@@ -8,30 +8,25 @@ int main(int argc, char** argv) {
   std::vector<std::thread> threadPool;
   // threadPool.push_back(std::thread(wsg_controller));
   // threadPool.push_back(std::thread(uskin_controller));
-  threadPool.push_back(std::thread(ur5e_controller));
-  // threadPool.push_back(std::thread(camera_controller));
+  // threadPool.push_back(std::thread(ur5e_controller));
+  threadPool.push_back(std::thread(camera_controller));
 
-  std::vector<double> ori_angle = {0, -98.9*deg2rad, 117.8*deg2rad, -108.9*deg2rad, -90*deg2rad, 90*deg2rad};
-  std::vector<double> off_angle = {0, -98.9*deg2rad, 117.8*deg2rad, -108.9*deg2rad, -90*deg2rad, 70*deg2rad};
-
-  /* Initial Grasp */
-  THETA jointState = urConfig.get_state();
-  while (miniROS::OK()) {
-    int key = scanKeyboard();
-    switch (key) {
-      case 'g':
-        ur5e::go_to_joint(off_angle, 3);
-        break;
-      case 'h':
-        ur5e::go_home(3);
-        break;
-      case 27: case 'q':
-        miniROS::shutdown();
-        break;
-      default:
-        break;
-    }
+  cpu_set_t mask;
+  // 初始化set集，将set置为空
+  CPU_ZERO(&mask);
+  // 将1-4号CPU加入集合(有0号CPU)
+  CPU_SET(5,&mask);
+  // 设置CPU亲和性
+  if(pthread_setaffinity_np(pthread_self(), sizeof(mask), &mask) < 0) {
+    fprintf(stderr, "### Error ###/n=== Set servo affinity failed\n");
   }
+
+  pid_t mainPid = get_tid();
+  ROS_INFO("P[%d] Main thread is Ready!", mainPid);
+  threadmanager.wait_for_syc(0);
+
+  main_menu();
+
   /* 等待线程结束 */
   for (int i=0; i<threadPool.size(); ++i) {
     threadPool[i].join();

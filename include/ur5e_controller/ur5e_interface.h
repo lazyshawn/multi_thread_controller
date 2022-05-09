@@ -14,4 +14,6 @@ void go_home(double time);
 void plane_pivot();
 void plane_screw();
 void move_ref_to_end();
+void print_current_info();
+void teleoperate();
 } // namespace ur5e

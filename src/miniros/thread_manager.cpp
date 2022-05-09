@@ -13,9 +13,9 @@ void ThreadManager::timespec_init(){
   ts.tv_sec++;
 }
 
-timespec ThreadManager::wait_for_syc() {
+timespec ThreadManager::wait_for_syc(int countIncre) {
   std::unique_lock lock(threadMutex);
-  threadCounter++;
+  threadCounter += countIncre;
   if(threadCounter==threadNum) {
     threadCondVar.notify_all();
   } else {
@@ -30,4 +30,6 @@ timespec ThreadManager::wait_for_syc() {
 timespec ThreadManager::get_timespec() {
   return ts;
 }
+
+pid_t get_tid() { return syscall(SYS_gettid); }
 

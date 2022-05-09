@@ -22,7 +22,8 @@ void ur5e_controller() {
   ur.uploadProg();
   // 完成初始化
   time = get_current_time();
-  ROS_INFO("[%Lf] UR5e thread is Ready!", time);
+  pid_t urPid = get_tid();
+  ROS_INFO("T[%Lf] P[%d] UR5e thread is Ready!", time, urPid);
 
   /* 等待线程同步 */
   ts = threadmanager.wait_for_syc();

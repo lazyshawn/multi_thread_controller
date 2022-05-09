@@ -1,7 +1,7 @@
 #include "realsense/camera_thread.h"
 
 ObjState objState;
-Camera cameraOnHand;
+Camera camera;
 Recorder cameraRecord(7);
 
 /*************************************************************************
@@ -19,13 +19,14 @@ void camera_controller() {
   //   -0.0359439, -0.9993594, 0.0026104, 82,
   //   0.0340151,  0.0013871, 0.9994293, 26,
   //   0, 0, 0, 1;
-  new (&cameraOnHand) Camera("817612070676");
-  cameraOnHand.set_extrMat(cam2elk);
-  Camera camera = cameraOnHand;
+  std::string cameraOnHand = "817612070676";
+  new (&camera) Camera(cameraOnHand.c_str());
+  camera.set_extrMat(cam2elk);
   cv::VideoWriter outputVideo = camera.create_recorder();
   // 完成初始化
   time = get_current_time();
-  ROS_INFO("[%Lf] Realsense thread is Ready!", time);
+  pid_t cameraPid = get_tid();
+  ROS_INFO("T[%Lf] P[%d] Realsense thread is Ready!", time, cameraPid);
 
   /* 等待线程同步 */
   ts = threadmanager.wait_for_syc();
@@ -44,11 +45,11 @@ void camera_controller() {
     cv::Mat color = camera.get_color_frame();
     outputVideo << color;
     // 检测 Marker 在 elk 下的位姿
-    camera.detect_marker(color, 14, 120, objStateData.markerPose);
+    camera.detect_marker(color, 14, 120, objStateData.obj2elk);
     objState.update(&objStateData);
     /* 记录数据 */
     cameraRecord.data_record();
-    // cameraRecord.flag_reset();
+    // crmeraRecord.flag_reset();
 
     /* calculate next shot | 设置下一个线程恢复的时间 */
     ts.tv_nsec += CAMERA_PERIOD;
