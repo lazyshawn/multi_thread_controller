@@ -42,4 +42,6 @@ int main(){
 https://blog.csdn.net/weixin_43406295/article/details/98101439)。
 1. [C++ 中如何在一个构造函数中调用另一个构造函数, qingfenghao, ChinaUnix](
 http://blog.chinaunix.net/uid-23741326-id-3385581.html)
+1. [c++中定义了一个类的对象之后，还能再调用对象的构造函数吗? 夏之幻想, 知乎](
+https://www.zhihu.com/question/365133268/answer/968623573)
 

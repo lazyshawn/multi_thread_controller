@@ -16,3 +16,10 @@ Using pre-build packages [librealsense](
 https://github.com/IntelRealSense/librealsense/blob/master/doc/distribution_linux.md).
 Alternatively, build from source with CMake flag `BUILD_WITH_OPENMP=false`.
 
+* segmentation fault (core dumped)
+
+[Issues #6865](https://github.com/IntelRealSense/librealsense/issues/6865), 
+[Issues #2107](https://github.com/isl-org/Open3D/issues/2107)
+
+`pipeline`的声明和初始化需要在同一个作用域内(原因未知)。
+

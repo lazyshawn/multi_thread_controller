@@ -39,6 +39,7 @@ add_library(ur_driver SHARED
   src/ur_driver/ur_communication_RT.cpp
   src/ur_driver/ur_driver.cpp
 )
+target_link_libraries(ur_driver -lpthread)
 target_include_directories(ur_driver PUBLIC
   ${PROJECT_SOURCE_DIR}/include/ur_driver
 )
