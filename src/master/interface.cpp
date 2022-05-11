@@ -27,5 +27,7 @@ void devices_home() {
 }
 
 void pick_and_place(double hoverHeight) {
+  Mat4d obj2elk = objState.get_marker();
+  std::cout << obj2elk << std::endl;
 }
 

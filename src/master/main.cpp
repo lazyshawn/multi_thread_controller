@@ -11,8 +11,7 @@ int main(int argc, char** argv) {
   // threadPool.push_back(std::thread(uskin_controller));
   // threadPool.emplace_back(std::thread(ur5e_controller));
 
-  pid_t mainPid = get_tid();
-  ROS_INFO("P[%d] Main thread is Ready!", mainPid);
+  ROS_INFO("P[%d] Main thread is Ready!", get_tid());
   threadmanager.wait_for_syc(0);
 
   main_menu();

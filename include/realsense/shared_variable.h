@@ -9,13 +9,17 @@ class ObjState {
 public:
   struct Data {
     Mat4d obj2elk;
-    bool flag = false;
   };
   Data get_data(void);
   void update(Data* Data_);
+  void set_check_marker();
+  void reset_check_marker();
+  bool check_marker();
+  Mat4d get_marker();
 
 private:
   Data data;
+  std::atomic<bool> checkMark{false};
   std::mutex cameraMutex;
   std::condition_variable cameraCond;
 };

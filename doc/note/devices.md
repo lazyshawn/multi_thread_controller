@@ -21,5 +21,6 @@ Alternatively, build from source with CMake flag `BUILD_WITH_OPENMP=false`.
 [Issues #6865](https://github.com/IntelRealSense/librealsense/issues/6865), 
 [Issues #2107](https://github.com/isl-org/Open3D/issues/2107)
 
-`pipeline`的声明和初始化需要在同一个作用域内(原因未知)。
+可能是由于 `pipe` 开启的线程导致的。在子线程中申明 `pipe` 并通过参数的方式传递给
+其他类或函数后不会出现这种错误。
 

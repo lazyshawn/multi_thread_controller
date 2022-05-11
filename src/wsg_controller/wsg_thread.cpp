@@ -9,8 +9,8 @@ void wsg_controller(){
   struct timespec t;
   WSGGripper gripper("10.249.180.222", 1000);
   WSGCMD cmd = {0,0};
-  time = get_current_time();
-  ROS_INFO("[%Lf] WSG thread is Ready!", time);
+  // 完成初始化
+  ROS_INFO("P[%d] T[%Lf] WSG thread is Ready!", get_current_time(), get_tid());
 
   /* 等待线程同步 */
   t = threadmanager.wait_for_syc();
@@ -18,7 +18,7 @@ void wsg_controller(){
   /* 开始伺服周期 */
   while (miniROS::OK()) {
     /* Wait until next shot | 休眠到下个周期开始 */
-    clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &t, NULL);
+    clock_nanosleep(CLOCK_REALTIME, TIMER_ABSTIME, &t, NULL);
 
     /* 伺服线程主程序 */
     gripper.read_pos();

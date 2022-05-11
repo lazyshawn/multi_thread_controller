@@ -13,6 +13,7 @@
 #include <sys/time.h>     // needed for getrusage
 #include <unistd.h>       // needed for sysconf(int name);
 #include <sys/syscall.h>  // needed for syscall
+#include "miniros/user_interface.h"
 
 // Ref: https://stackoverflow.com/questions/24220778/simultaneous-threads-in-c-using-thread
 class ThreadManager {

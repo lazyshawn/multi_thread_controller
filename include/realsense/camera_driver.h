@@ -17,6 +17,7 @@
 
 class Camera {
 private:
+  int devNum;
   std::vector<std::string> serials;
   std::map<std::string, int> devMap;
   rs2::frameset fs;
@@ -27,20 +28,22 @@ private:
   std::vector<Eigen::Matrix<double, 4, 4>> extrMat;
 
 public:
-  int devNum;
   rs2::context ctx;
-  rs2::pipeline pipe;
-  std::vector<rs2::pipeline> pipelines;
+  // std::vector<rs2::pipeline> pipelines;
 
   Camera();
   Camera(std::string serialNum);
   ~Camera();
 
-  void active(std::vector<std::string> devSerials);
+  void active(std::vector<std::string> devSerials, rs2::pipeline pipeline,
+      std::vector<rs2::pipeline>& pipelines);
   void auto_active();
   int get_dev_index(std::string serial);
-  void get_frameset();
+  void get_frameset(std::vector<rs2::pipeline>& pipelines);
   cv::Mat get_frame(int devIndex);
   cv::VideoWriter create_recorder(std::string videoSavePath);
   void set_extrMat(int devIndex, Eigen::Matrix<double, 4, 4> extr);
+  void pixel_to_point(float *point3d, float *pixel, float depth, int devIndex);
+  int detect_marker(cv::Mat frame, int id, float depth, int devIndex,
+                    Eigen::Matrix<double, 4, 4> &markerPose);
 };

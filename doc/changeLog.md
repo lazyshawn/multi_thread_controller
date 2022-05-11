@@ -12,11 +12,19 @@ Notation:
 <!-- The format is based on Keep a [Changelog](https://keepachangelog.com/en/1.0.0/). -->
 
 ## ✨ Logs
+### 220511
+> commit [d3d3adc](
+), commit [](
+)
+1. `fix`: 解决了相机线程中的`zsh: segmentation fault (core dumped)` 的问题。重写
+   了相机管理类，`rs2::pipeline`不再是其成员变量。
+
 ### 220509
-> commit [](
+> commit [55573f0](
 )
 1. `fix`: 解决了 Realsense 程序中 `pipe.start()` 后 CPU 占用率高的问题。这是
-   Realsense 库的安装问题。
+   Realsense 库的安装问题，[Issues #2037](
+   https://github.com/IntelRealSense/librealsense/issues/2037)。
 
 ### 220508
 > commit [9cec07b](

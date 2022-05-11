@@ -18,9 +18,11 @@ timespec ThreadManager::wait_for_syc(int countIncre) {
   threadCounter += countIncre;
   if(threadCounter==threadNum) {
     threadCondVar.notify_all();
-  } else {
+  } else if(threadCounter < threadNum){
     // 等待其他线程启动
     threadCondVar.wait(lock, [this]{return threadCounter==threadNum;});
+  } else {
+    ROS_WARN("Threads over launched");
   }
   // 等待 timespec 初始化
   std::call_once(timespec_init_flag,&ThreadManager::timespec_init,this);

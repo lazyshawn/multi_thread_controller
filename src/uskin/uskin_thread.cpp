@@ -16,8 +16,9 @@ void uskin_controller(){
     ROS_ERROR("Can't find the sensor: uskin");
     return;
   };
-  time = get_current_time();
-  ROS_INFO("[%Lf] Uskin thread is Ready!", time);
+  // 完成初始化
+  ROS_INFO("P[%d] T[%Lf] Uskin thread is Ready!",
+           get_current_time(), get_tid());
 
   /* 等待线程同步 */
   t = threadmanager.wait_for_syc();
@@ -25,7 +26,7 @@ void uskin_controller(){
   /* 开始伺服周期 */
   while (miniROS::OK()) {
     /* Wait until next shot | 休眠到下个周期开始 */
-    clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &t, NULL);
+    clock_nanosleep(CLOCK_REALTIME, TIMER_ABSTIME, &t, NULL);
 
     /* 伺服线程主程序 */
     uskin.read_force(forceData.forceMat, forceData.timestamp);
