@@ -16,11 +16,12 @@ Camera::Camera(std::string serialNum){
 Camera::~Camera(){
 }
 
-void Camera::active(std::vector<std::string> devSerials, rs2::pipeline pipe,
+void Camera::active(std::vector<std::string> devSerials,
     std::vector<rs2::pipeline>& pipelines) {
   devNum = devSerials.size();
   intrPara = std::vector<rs2_intrinsics>(devNum);
   for (int i=0; i<devNum; ++i) {
+    rs2::pipeline pipe;
     // 建立设备号的索引
     std::string serial = devSerials[i];
     devMap[serial] = i;
@@ -110,6 +111,7 @@ void Camera::pixel_to_point(float* point3d, float* pixel, float depth, int devIn
 }
 
 /* **************** 检测 Marker 位姿 **************** */
+// markerPose: Marker 在 TCP 坐标系下的位姿
 // Ref: https://blog.csdn.net/qq_33446100/article/details/89115983
 int Camera::detect_marker(cv::Mat frame, int id, float depth, int devIndex,
                           Eigen::Matrix<double, 4, 4> &markerPose) {
@@ -153,7 +155,7 @@ int Camera::detect_marker(cv::Mat frame, int id, float depth, int devIndex,
   ds = sqrt(dx*dx + dy*dy);
   obj2cam(0,0) = dx/ds;
   obj2cam(1,0) = dy/ds;
-  // 纵坐标 y
+  // 纵坐标 y (P1 - P2)
   dx = corn[1][0] - corn[2][0];
   dy = corn[1][1] - corn[2][1];
   ds = sqrt(dx*dx + dy*dy);
@@ -165,6 +167,6 @@ int Camera::detect_marker(cv::Mat frame, int id, float depth, int devIndex,
   obj2cam(2,2) = obj2cam(3,3) = 1;
   
   markerPose = extrMat[devIndex]*obj2cam;
-  std::cout << obj2cam << std::endl;
+  // std::cout << obj2cam << std::endl;
   return 1;
 }

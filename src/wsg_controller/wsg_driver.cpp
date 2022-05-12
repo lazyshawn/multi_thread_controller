@@ -59,7 +59,7 @@ double WSGGripper::read_pos() {
   sprintf(cmd, "POS?\n");
   send_cmd(cmd);
   pos = std::atof(&msgRecv[4]);
-  printf("%lf\n", pos);
+  // printf("%lf\n", pos);
   return pos;
 }
 

@@ -20,6 +20,9 @@ void ur5e_controller() {
   usleep(500); // 机械臂初始化，确保能TCP通信连上(accept)
   ur.setServojTime((double)UR_PERIOD / NSEC_PER_SEC);
   ur.uploadProg();
+  // 初始状态下机械臂关节位置
+  jointState = ur.rt_interface_->robot_state_->getQActual();
+  urConfig.update_state(jointState);
   // 完成初始化
   ROS_INFO("P[%d] T[%Lf] UR5e thread is Ready!", get_current_time(), get_tid());
 
@@ -34,10 +37,12 @@ void ur5e_controller() {
 
     /* 伺服线程主程序 */
     // 每个伺服周期开始的时间
-    // time = get_current_time() - startTime;
+    time = get_current_time() - startTime;
+    urRecord.push_item(std::vector<double>(1, time));
     // 读取机械臂关节角位置
     jointState = ur.rt_interface_->robot_state_->getQActual();
     urConfig.update_state(jointState);
+    urRecord.push_item(jointState);
     // 弹出路径并发送 servoj 指令
     if (urConfig.pop(refJoint)) {
       // 急停保护
@@ -50,12 +55,14 @@ void ur5e_controller() {
         }
       }
       ur.servoj(refJoint);
+      urRecord.flag_set();
     }
 
+    urRecord.data_record();
+    urRecord.flag_reset();
     /* calculate next shot | 设置下一个线程恢复的时间 */
-    ts.tv_nsec += UR_PERIOD;
-    // 时间进位
-    time_wrap(ts);
+    timer_incre(ts, UR_PERIOD);
   } // while (1)
+  urRecord.data_export("jointState.txt");
 }
 

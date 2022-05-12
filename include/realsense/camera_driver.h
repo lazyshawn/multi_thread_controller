@@ -35,8 +35,8 @@ public:
   Camera(std::string serialNum);
   ~Camera();
 
-  void active(std::vector<std::string> devSerials, rs2::pipeline pipeline,
-      std::vector<rs2::pipeline>& pipelines);
+  void active(std::vector<std::string> devSerials,
+              std::vector<rs2::pipeline> &pipelines);
   void auto_active();
   int get_dev_index(std::string serial);
   void get_frameset(std::vector<rs2::pipeline>& pipelines);

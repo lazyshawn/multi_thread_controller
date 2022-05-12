@@ -12,6 +12,12 @@ Notation:
 <!-- The format is based on Keep a [Changelog](https://keepachangelog.com/en/1.0.0/). -->
 
 ## ✨ Logs
+> commit [](
+)
+1. `perf`: 将 TCP 从 ELK 中心点转移到夹爪手指连线的中点上。
+1. `perf`: 新增了 `timer_incre` 函数，线程计时器累加。
+1. `fix`: 新增了逆解中角度是否为 `nan` 的判断。
+
 ### 220511
 > commit [d3d3adc](
 ), commit [](

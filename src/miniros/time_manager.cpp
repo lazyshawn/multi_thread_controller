@@ -16,6 +16,11 @@ void time_wrap(timespec& ts) {
   }
 }
 
+void timer_incre(timespec& ts, long long int period) {
+  ts.tv_nsec += period;
+  time_wrap(ts);
+}
+
 long double timespec2time(timespec ts) {
   unsigned long long int tsc1;
   tsc1 = (long long int)(ts.tv_sec) * NSEC_PER_SEC +

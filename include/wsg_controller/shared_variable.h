@@ -22,5 +22,7 @@ public:
   void set(WSGCMD wsgcmd);
   bool empty() const;
   bool clean();
+  void update_state(double position);
+  double get_state();
 };
 

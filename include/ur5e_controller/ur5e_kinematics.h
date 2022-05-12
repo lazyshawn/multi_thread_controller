@@ -20,7 +20,9 @@
 #define DH_A3 392.25
 #define DH_D4 109.15
 #define DH_D5 94.65
-#define DH_D6 82.3 
+// #define DH_D6 82.3
+// TCP 控制点位置补偿
+#define DH_D6 256.3 
 
 #ifndef rad2deg
 #define rad2deg 180.0 / M_PI
@@ -85,8 +87,8 @@ int calcJnt(THETA q);
 /*************************************************************************
  * @brief: 平面运动规划
 *************************************************************************/
-bool plane_kinematics(std::array<double,3>& state);
-THETA plane_invese_kinematics(std::array<double,3>& state);
+bool plane_kinematics(THETA jointState, std::array<double,3>& state);
+THETA plane_inv_kinematics(std::array<double,3>& state);
 THETA plane_jacobian(Vec3d twist);
 THETA plane_jacobian(Vec3d twist, float time);
 

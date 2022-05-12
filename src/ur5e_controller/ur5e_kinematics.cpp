@@ -32,17 +32,19 @@ int calcJnt(THETA q) {
 }
 
 // 平面内运动的正运动学
-// state[2] 为指尖连线与x轴正向的夹角(逆时针为正)
-bool plane_kinematics(std::array<double,3>& state) {
+// state[0], state[1]: elk 坐标系原点 x、z 坐标
+// state[2]: elk 坐标系 z 轴方向与 base 坐标系 x 轴夹角(q_elk)
+bool plane_kinematics(THETA jointState, std::array<double,3>& state) {
+  calcJnt(jointState);
   state[0] = DH_A2*c2 + DH_A3*c23 - DH_D5*s234 - DH_D6*c234;
   state[1] = DH_D1 - DH_A2*s2 - DH_A3*s23 - DH_D5*c234 + DH_D6*s234;
-  state[2] = -q2 -q3 -q4 -M_PI/2;
+  state[2] = q2 + q3 + q4;
   return true;
 }
 
 // 平面内运动的逆解(降低为三自由度)
-THETA plane_invese_kinematics(std::array<double,3>& state) {
-  double x = state[0], z = state[1], q = -state[2] -M_PI/2;
+THETA plane_inv_kinematics(std::array<double,3>& state) {
+  double x = state[0], z = state[1], q = state[2];
   double c234 = cos(q), s234 = sin(q), c3, s3;
   double A = x + DH_D5*s234 + DH_D6*c234;
   double B = -z - DH_D5*c234 + DH_D6*s234 + DH_D1;
@@ -53,8 +55,8 @@ THETA plane_invese_kinematics(std::array<double,3>& state) {
   c3 = cos(theta[2]); s3 = sin(theta[2]);
   double delta = DH_A2*DH_A2 + 2*DH_A2*DH_A3*c3 + DH_A3*DH_A3;
   double A2 = (DH_A2+DH_A3*c3)*A + DH_A3*s3*B;
-  double B2 = -DH_A3*s3*A        + (DH_A2+DH_A3*c3)*B;
-  theta[1] = atan2(B2/delta, A2/delta);
+  double B2 = -DH_A3 * s3 * A + (DH_A2 + DH_A3 * c3) * B;
+  theta[1] = atan2(B2 / delta, A2 / delta);
   theta[3] = q - theta[1] - theta[2];
   // Wrap qJoint[3] to (-pi,pi]
   swap_joint(theta[3]);
@@ -307,6 +309,13 @@ THETA ur_InverseKinematics(Mat4d tranMat, THETA curTheta) {
   qJoint[3] = atan2(B4, A4) - qJoint[1] - qJoint[2];
   // Wrap qJoint[3] to (-pi,pi]
   swap_joint(qJoint[3]);
+  // nan exclusion
+  for (int i=0; i<6; ++i) {
+    if(std::isnan(qJoint[i])) {
+      qJoint[i] = curTheta[i];
+      std::cout << "==>> ERROR: qJoint[" << i<< "] is nan" << std::endl;
+    }
+  }
   return qJoint;
 }
 

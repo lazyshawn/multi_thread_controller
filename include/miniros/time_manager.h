@@ -15,6 +15,8 @@ long double get_current_time();
 
 void time_wrap(timespec& ts);
 
+void timer_incre(timespec& ts, long long int period);
+
 long double timespec2time(timespec ts);
 
 #endif

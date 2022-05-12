@@ -33,3 +33,13 @@ bool WSGConfig::clean() {
   return true;
 }
 
+void WSGConfig::update_state(double position) {
+  std::scoped_lock lock(wsgMutex);
+  pos = position;
+}
+
+double WSGConfig::get_state() {
+  std::scoped_lock lock(wsgMutex);
+  return pos;
+}
+

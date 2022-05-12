@@ -24,8 +24,27 @@ void go_to_pose(Mat4d tranMat, double time) {
 
 void go_home(double time) {
   Mat4d homePose;
-  homePose << 1, 0, 0, 400,  0, -1, 0, DH_D4, 0, 0, -1, 300,  0, 0, 0, 1;
+  homePose << 1, 0, 0, 400,  0, -1, 0, DH_D4, 0, 0, -1, 126,  0, 0, 0, 1;
   go_to_pose(homePose, time);
+}
+
+/*************************************************************************
+* @ Param: screw(xIncre, yIncre, q); time;
+* @ Note : q_elk = q_234; q_actuator = q_234 + pi;
+*************************************************************************/
+void plane_screw(Arr3d screw, double time) {
+  THETA jointState = urConfig.get_state(), jntCmd;
+  Arr3d state, detState;
+  plane_kinematics(jointState, state);
+  for (int i=0; i<3; ++i) detState[i] = screw[i] * UR_SERVO_TIME / time;
+  double prop, dt;
+  prop = dt = UR_SERVO_TIME / time;
+  while (prop <= 1) {
+    for (int i=0; i<3; ++i) state[i] += detState[i];
+    jntCmd = plane_inv_kinematics(state);
+    urConfig.push(jntCmd);
+    prop += dt;
+  }
 }
 
 void print_current_info() {
@@ -39,6 +58,10 @@ void print_current_info() {
   }
   std::cout << std::endl;
   std::cout << "-------- Transform Matrix --------\n" << tranMat << std::endl;
+}
+
+void wait_path_clear() {
+  while(!urConfig.empty());
 }
 
 void teleoperate() {
