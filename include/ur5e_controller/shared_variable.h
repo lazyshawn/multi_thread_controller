@@ -6,6 +6,7 @@
 
 class UrConfig {
 private:
+  bool isReady;
   std::queue<THETA> path;
   THETA jointState;
   std::mutex urMutex;
@@ -14,6 +15,8 @@ private:
 public:
   UrConfig();
 
+  void set_ready();
+  bool is_ready();
   THETA get_state();
   void update_state(THETA jointState_);
   void push(THETA refJoint);

@@ -5,12 +5,12 @@ WSGConfig wsgConfig;
 /* 夹爪线程 */
 void wsg_controller(){
   /* 线程初始化 */
-  long double time;
   struct timespec ts;
   WSGGripper gripper("10.249.180.222", 1000);
+  wsgConfig.set_ready();
   WSGCMD cmd = {0,0};
   // 完成初始化
-  ROS_INFO("P[%d] T[%Lf] WSG thread is Ready!", get_current_time(), get_tid());
+  ROS_INFO("P[%d] T[%Lf] WSG thread is Ready!", get_tid(), get_current_time());
 
   /* 等待线程同步 */
   ts = threadmanager.wait_for_syc();

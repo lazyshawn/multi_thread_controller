@@ -88,7 +88,7 @@ int calcJnt(THETA q);
  * @brief: 平面运动规划
 *************************************************************************/
 bool plane_kinematics(THETA jointState, std::array<double,3>& state);
-THETA plane_inv_kinematics(std::array<double,3>& state);
+THETA plane_inv_kinematics(std::array<double,3> state);
 THETA plane_jacobian(Vec3d twist);
 THETA plane_jacobian(Vec3d twist, float time);
 

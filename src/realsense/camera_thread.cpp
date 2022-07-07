@@ -15,7 +15,9 @@ void camera_controller() {
   ObjState::Data objStateData;
   // 初始化相机
   std::vector<std::string> devSerials;
-  std::string cameraOnHand = "817612070676", cameraOnSide = "826212070613";
+  std::string cameraOnHand = "817612070676";
+  std::string cameraOnSide = "821312061951";
+  // std::string cameraOnSide = "826212070613";
   devSerials.emplace_back(cameraOnHand);
   devSerials.emplace_back(cameraOnSide);
   std::vector<rs2::pipeline> pipelines;
@@ -29,7 +31,7 @@ void camera_controller() {
   camera.set_extrMat(0, cam2tcp);
   // 完成初始化
   ROS_INFO("P[%d] T[%Lf] Realsense thread is Ready!",
-           get_current_time(), get_tid());
+           get_tid(), get_current_time());
 
   /* 等待线程同步 */
   ts = threadmanager.wait_for_syc();

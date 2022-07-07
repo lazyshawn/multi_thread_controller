@@ -4,10 +4,18 @@
 ThreadManager threadmanager(1);
 
 int main(int argc, char** argv) {
-  double time;
+  /* 开启线程 */
   std::vector<std::thread> threadPool;
-  threadPool.push_back(std::thread(camera_controller));
+  threadPool.emplace_back(std::thread(camera_controller));
 
+  // 输出当前已连接的相机
+  Camera cameraLocal;
+  cameraLocal.auto_active();
+
+  ROS_INFO("P[%d] Main thread is Ready!", get_tid());
+  threadmanager.wait_for_syc(0);
+
+  std::cout << "Press 'ESC' or 'q' to exit." << std::endl;
   while (miniROS::OK()) {
     int key = scanKeyboard();
     switch (key) {

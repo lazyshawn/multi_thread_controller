@@ -1,14 +1,14 @@
 #include "master/interface.h"
 
 /* 线程管理 */
-ThreadManager threadmanager(3);
+ThreadManager threadmanager(2);
 
 int main(int argc, char** argv) {
   /* 开启线程 */
   std::vector<std::thread> threadPool;
-  threadPool.emplace_back(std::thread(camera_controller));
-  threadPool.push_back(std::thread(wsg_controller));
-  // threadPool.push_back(std::thread(uskin_controller));
+  // threadPool.emplace_back(std::thread(camera_controller));
+  threadPool.emplace_back(std::thread(wsg_controller));
+  // threadPool.emplace_back(std::thread(uskin_controller));
   threadPool.emplace_back(std::thread(ur5e_controller));
 
   ROS_INFO("P[%d] Main thread is Ready!", get_tid());

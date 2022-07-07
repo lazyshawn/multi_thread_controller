@@ -1,0 +1,16 @@
+{
+"configurations": {
+    "Launch": {
+      "adapter": "vscode-cpptools",
+      "configuration": {
+        "request": "launch",
+        "program": "build/main",
+        "cwd": "/home/shawn/Desktop/gitpro/miniros",
+        "externalConsole": true,
+        "MIMode": "gdb"
+      }
+    }
+  }
+}
+
+

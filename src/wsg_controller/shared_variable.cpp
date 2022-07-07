@@ -1,7 +1,17 @@
 #include "wsg_controller/shared_variable.h"
 
+/* **************** 判断机械臂是否已经启动 **************** */
+void WSGConfig::set_ready() {
+  isReady = true;
+}
+
+bool WSGConfig::is_ready() {
+  return isReady;
+}
+
 /* 添加后续路径 */
 void WSGConfig::push(WSGCMD wsgcmd) {
+  if (!is_ready()) {ROS_WARN("WSG is not ready!"); return;}
   std::scoped_lock lock(wsgMutex);
   data.emplace(std::move(wsgcmd));
   // wsgcmdCond.notify_one();

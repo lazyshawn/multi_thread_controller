@@ -1,6 +1,16 @@
 #include "ur5e_controller/shared_variable.h"
 
-UrConfig::UrConfig(){}
+UrConfig::UrConfig() : isReady(false){
+}
+
+/* **************** 判断机械臂是否已经启动 **************** */
+void UrConfig::set_ready() {
+  isReady = true;
+}
+
+bool UrConfig::is_ready() {
+  return isReady;
+}
 
 /* 添加后续路径 */
 void UrConfig::push(THETA joint) {

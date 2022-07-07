@@ -8,6 +8,7 @@ typedef std::vector<double> WSGCMD;
 
 class WSGConfig {
 private:
+  bool isReady;
   // pos + vel
   std::queue<WSGCMD> data;
   double pos, vel;
@@ -17,6 +18,8 @@ private:
 public:
   WSGConfig() : vel(20) {};
 
+  void set_ready();
+  bool is_ready();
   void push(WSGCMD wsgcmd);
   bool pop(WSGCMD& wsgcmd);
   void set(WSGCMD wsgcmd);

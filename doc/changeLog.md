@@ -2,10 +2,10 @@
 All notable changes to this project will be documented in this file (Since 2022.05.06).
 
 Notation:
-* `fix`: 修改 Bug。
+* `fix`: 修改 Bug 。
 * `doc`: 更新文档。
 * `perf`: 功能完善。对项目或模块进行了性能优化。
-* `chore`: 其他改动。修改注释或文件清理，不影响src和test代码文件的改动。
+* `chore`: 其他改动。修改注释或文件清理，不影响 src 和 test 代码文件的改动。
 * `ci`: 持续集成。分支合并等。
 * `revert`: 回滚了一些前面的代码。
 
@@ -15,6 +15,7 @@ Notation:
 > commit [](
 )
 1. `perf`: 将 TCP 从 ELK 中心点转移到夹爪手指连线的中点上。
+1. `perf`: 新增 `plane_screw` 函数。
 1. `perf`: 新增了 `timer_incre` 函数，线程计时器累加。
 1. `fix`: 新增了逆解中角度是否为 `nan` 的判断。
 
