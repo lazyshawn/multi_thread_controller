@@ -10,6 +10,9 @@ $$
 ## ✨ UR5 configuration
 ![ur5-configuration](../pics/UR5-Configuration.svg)
 
+> **Remark:** 程序中对 DH 坐标做了一定修改。`{base}`修改到了关节1的黑圈上边沿，
+`{elk}`修改到了末端黑圈下边沿，与实际坐标系偏置了46mm。
+
 Link parameters of the UR5 (**Modified DH**).
 
 | $i$ | $\alpha_{i-1}$ | $a_{i-1}$ | $d_i$  | $\theta_i$ |

@@ -1,7 +1,7 @@
 #include "miniros/thread_manager.h"
 
 ThreadManager::ThreadManager()
-  : threadNum(1), threadCounter(0) {
+  : threadNum(INT_MAX), threadCounter(0) {
 }
 
 ThreadManager::ThreadManager(int threadNum_)
@@ -11,6 +11,10 @@ ThreadManager::ThreadManager(int threadNum_)
 void ThreadManager::timespec_init(){
   clock_gettime(CLOCK_REALTIME, &ts);
   ts.tv_sec++;
+}
+
+void ThreadManager::set_threadNum(int num) {
+  threadNum = num;
 }
 
 timespec ThreadManager::wait_for_syc(int countIncre) {

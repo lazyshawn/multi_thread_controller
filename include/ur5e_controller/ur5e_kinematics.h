@@ -15,14 +15,17 @@
 #include <eigen3/Eigen/Dense>
 
 // Modified DH parameters for UR5
-#define DH_D1 89.459
+// #define DH_D1 89.459
+// #define DH_D6 82.3
+// Base 坐标系偏移
+#define DH_D1 43.459
 #define DH_A2 425.00
 #define DH_A3 392.25
 #define DH_D4 109.15
 #define DH_D5 94.65
-// #define DH_D6 82.3
+// #define DH_D6 36.3  // {elk}黑圈外沿
 // TCP 控制点位置补偿
-#define DH_D6 256.3 
+#define DH_D6 256.3
 
 #ifndef rad2deg
 #define rad2deg 180.0 / M_PI

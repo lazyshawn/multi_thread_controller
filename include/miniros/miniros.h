@@ -6,6 +6,9 @@
 #include "user_interface.h"
 #include "data_export.h"
 
+extern ThreadManager threadmanager;
+extern std::vector<std::thread> threadPool;
+
 /*******************************************************
 * Todo:
 * 1. 线程同步
@@ -14,8 +17,14 @@
 namespace miniROS {
   bool OK();
   void shutdown();
-}
 
-extern ThreadManager threadmanager;
+  template<typename F>
+  void node(F func) {
+    threadPool.emplace_back(std::thread(func));
+  }
+
+  void node_test(int num);
+  void joinall();
+} // namespace miniROS
 
 #endif

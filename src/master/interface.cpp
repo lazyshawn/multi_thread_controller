@@ -2,7 +2,9 @@
 
 THETA rotAftJnt = {0, - 1.76592, 2.52261, -2.43964, -1.57081,1.5708};
 // 翻转圆顶矩形 - 开环
-THETA rotBegJnt_2 = {0, -81.3037, 124.034, -113.608, -90, 90};
+// THETA rotBegJnt_2 = {0, -81.3037, 124.034, -113.608, -90, 90};
+THETA rotBegJnt_2 = {0, -76.319, 117.504, -113.314, -90, 90};
+Mat4d zeroPose;
 
 Mat4d rlsPose;
 void main_menu() {
@@ -10,6 +12,8 @@ void main_menu() {
     int key = scanKeyboard();
     switch (key) {
       case 'h':
+        zeroPose << 1, 0, 0, 350, 0, -1, 0, DH_D4, 0, 0, -1, 0, 0, 0, 0, 1;
+        ur5e::go_to_pose(zeroPose, 8);
         break;
       case 'r':
         ROS_INFO("You're in ur5e teleoperate mode.");
@@ -18,15 +22,19 @@ void main_menu() {
       case 't':
         // pick_and_place(126);
         wsgConfig.push({71, 40});
-        // rlsPose << 1,0,0,350, 0,-1,0,DH_D4, 0,0,-1,-40, 0,0,0,1;
-        // ur5e::go_to_pose(rlsPose, 5);
+        ur5e::print_tcp_position(71);
         for (int i=0; i<6; ++i) { rotBegJnt_2[i] *= deg2rad; }
         ur5e::go_to_joint(rotBegJnt_2, 8);
         if (scanKeyboard() == 'q') {return;}
-        ur5e::tcp_pivot_2d({330, -70, -15*deg2rad}, 10);
+        ur5e::tcp_pivot_2d({376, -110, -50*deg2rad}, 15);
+        if (scanKeyboard() == 'q') {return;}
+        ur5e::print_tcp_position(71);
+        ur5e::body_twist(-1, 0.2);
+        wsgConfig.push({73, 10});
+        // if (scanKeyboard() == 'q') {return;}
+        // ur5e::tcp_pivot_2d({406.529, -46.0023, 45*deg2rad}, 15);
         break;
       case 'p':
-        // ur5e::tcp_pivot_2d({330, -60, -4*deg2rad}, 5);
         break;
       case 27: case 'q':
         miniROS::shutdown();

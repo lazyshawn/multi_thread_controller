@@ -67,7 +67,7 @@ add_library(wsg_driver SHARED
 target_include_directories(wsg_driver PUBLIC
   ${PROJECT_SOURCE_DIR}/include/wsg_controller
 )
-# Force Sensor
+# uskin Force Sensor
 add_library(uskin_driver SHARED
   src/uskin/sensor_driver.cpp
   src/uskin/shared_variable.cpp
@@ -88,10 +88,17 @@ target_link_libraries(camera_driver ${OpenCV_LIBS} -lopencv_aruco -lrealsense2)
 target_include_directories(camera_driver PUBLIC
   ${PROJECT_SOURCE_DIR}/include/realsense
 )
+# dydw 3 axis force sensor
+add_library(dydw_driver SHARED
+  src/dydw/dydw_driver.cpp
+)
+target_include_directories(dydw_driver PUBLIC
+  ${PROJECT_SOURCE_DIR}/include/dydw
+)
 
-############################################################################
-# ==>> Create an executable
-############################################################################
+# ############################################################################
+# # ==>> Create an executable
+# ############################################################################
 # Add an executable with the above sources
 # miniros_bin
 add_executable(miniros_bin
@@ -113,12 +120,12 @@ add_executable(ur5e_bin
   src/ur5e_controller/ur5e_main.cpp
 )
 target_link_libraries(ur5e_bin miniros_lib ur5e_driver)
-# camera_bin
-add_executable(camera_bin
-  src/realsense/camera_main.cpp
-)
-target_link_libraries(camera_bin miniros_lib camera_driver)
-
+# # camera_bin
+# add_executable(camera_bin
+#   src/realsense/camera_main.cpp
+# )
+# target_link_libraries(camera_bin miniros_lib camera_driver)
+#
 # master
 add_executable(main
   src/master/main.cpp
@@ -127,5 +134,11 @@ add_executable(main
 target_link_libraries(main
   miniros_lib wsg_driver uskin_driver ur5e_driver camera_driver
 )
-
+# dydw 3 axis force sensor
+add_executable(dydw_bin
+  src/master/main.cpp
+)
+target_link_libraries(dydw_bin
+  miniros_lib dydw_driver
+)
 

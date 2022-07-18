@@ -30,6 +30,7 @@ private:
 public:
   ThreadManager();
   ThreadManager(int threadNum_);
+  void set_threadNum(int num);
   /* 线程同步启动 */
   timespec wait_for_syc(int countIncre = 1);
   timespec get_timespec();

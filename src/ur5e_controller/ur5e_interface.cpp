@@ -33,9 +33,14 @@ void go_to_pose(Mat4d tranMat, double time) {
 
 void go_home(double time) {
   check_ur_state();
-  Mat4d homePose;
-  homePose << 1, 0, 0, 400,  0, -1, 0, DH_D4, 0, 0, -1, 126,  0, 0, 0, 1;
-  go_to_pose(homePose, time);
+  // Mat4d homePose;
+  // homePose << 1, 0, 0, 400,  0, -1, 0, DH_D4, 0, 0, -1, 126,  0, 0, 0, 1;
+  THETA homeJnt = {0, -98.9285, 117.772, -108.845, -89.9979, 89.998};
+  for (int i=0; i<6; ++i) {
+    homeJnt[i] *= deg2rad;
+  }
+  go_to_joint(homeJnt, time);
+  // go_to_pose(homePose, time);
 }
 
 /*************************************************************************
@@ -116,6 +121,27 @@ void plane_screw(Arr3d screw, double time) {
     urConfig.push(jntCmd);
     prop += dt;
   }
+}
+
+std::vector<double> print_tcp_position(double gripWidth) {
+  THETA jointState = urConfig.get_state();
+  Arr3d state;
+  double leftFingerX, leftFingerZ, tipAngle, rightFingerX, rightFingerZ;
+  double offset = gripWidth/2 + 2;
+  std::vector<double> fingerPos;
+
+  plane_kinematics(jointState, state);
+  tipAngle = state[2] + M_PI/2;
+  leftFingerX = state[0] - cos(tipAngle) * offset;
+  leftFingerZ = state[1] + sin(tipAngle) * offset;
+  std::cout << "angle of elk [deg]: " << state[2]*rad2deg << std::endl;
+  std::cout << "leftFingerX, leftFingerZ : " << leftFingerX << ", "<< leftFingerZ << std::endl;
+  rightFingerX = state[0] + cos(tipAngle) * offset;
+  rightFingerZ = state[1] - sin(tipAngle) * offset;
+  std::cout << "rightFingerX, rightFingerZ : " << rightFingerX << ", "<< rightFingerZ << std::endl;
+
+  fingerPos = {leftFingerX, leftFingerZ, rightFingerX, rightFingerZ};
+  return fingerPos;
 }
 
 void wait_path_clear() {

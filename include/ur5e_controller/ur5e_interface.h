@@ -19,6 +19,7 @@ void body_twist(double distance, double time);
 void tcp_move_2d(Arr3d movement, double time);
 void tcp_pivot_2d(Arr3d twist, double time);
 void plane_screw(Arr3d screw, double time);
+std::vector<double> print_tcp_position(double gripWidth);
 void plane_pivot();
 void move_ref_to_end();
 void wait_path_clear();
