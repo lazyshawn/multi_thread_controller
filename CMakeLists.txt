@@ -90,7 +90,10 @@ target_include_directories(camera_driver PUBLIC
 )
 # dydw 3 axis force sensor
 add_library(dydw_driver SHARED
+  src/dydw/rs485_driver.cpp
   src/dydw/dydw_driver.cpp
+  src/dydw/dydw_shared.cpp
+  src/dydw/dydw_thread.cpp
 )
 target_include_directories(dydw_driver PUBLIC
   ${PROJECT_SOURCE_DIR}/include/dydw
@@ -125,20 +128,20 @@ target_link_libraries(ur5e_bin miniros_lib ur5e_driver)
 #   src/realsense/camera_main.cpp
 # )
 # target_link_libraries(camera_bin miniros_lib camera_driver)
-#
-# master
-add_executable(main
-  src/master/main.cpp
-  src/master/interface.cpp
-)
-target_link_libraries(main
-  miniros_lib wsg_driver uskin_driver ur5e_driver camera_driver
-)
 # dydw 3 axis force sensor
 add_executable(dydw_bin
-  src/master/main.cpp
+  src/dydw/main.cpp
 )
 target_link_libraries(dydw_bin
   miniros_lib dydw_driver
 )
-
+# master
+add_executable(main
+  src/master/main.cpp
+  src/master/master_shared.cpp
+  src/master/master_thread.cpp
+  src/master/master_interface.cpp
+)
+target_link_libraries(main
+  miniros_lib wsg_driver uskin_driver ur5e_driver camera_driver dydw_driver
+)

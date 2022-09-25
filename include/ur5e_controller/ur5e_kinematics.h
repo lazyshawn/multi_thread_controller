@@ -25,7 +25,8 @@
 #define DH_D5 94.65
 // #define DH_D6 36.3  // {elk}黑圈外沿
 // TCP 控制点位置补偿
-#define DH_D6 256.3
+// #define DH_D6 256.3  // 无传感器
+#define DH_D6 271.3  // 有传感器
 
 #ifndef rad2deg
 #define rad2deg 180.0 / M_PI

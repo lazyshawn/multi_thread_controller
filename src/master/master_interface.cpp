@@ -1,13 +1,15 @@
-#include "master/interface.h"
+#include "master/master_interface.h"
 
 THETA rotAftJnt = {0, - 1.76592, 2.52261, -2.43964, -1.57081,1.5708};
 // 翻转圆顶矩形 - 开环
 // THETA rotBegJnt_2 = {0, -81.3037, 124.034, -113.608, -90, 90};
 THETA rotBegJnt_2 = {0, -76.319, 117.504, -113.314, -90, 90};
-Mat4d zeroPose;
 
-Mat4d rlsPose;
+Mat4d zeroPose, rlsPose;
+std::vector<double> data = std::vector<double>(6,0);
+
 void main_menu() {
+  THETA joint;
   while (miniROS::OK()) {
     int key = scanKeyboard();
     switch (key) {
@@ -20,19 +22,9 @@ void main_menu() {
         ur5e::teleoperate();
         break;
       case 't':
-        // pick_and_place(126);
-        wsgConfig.push({71, 40});
-        ur5e::print_tcp_position(71);
-        for (int i=0; i<6; ++i) { rotBegJnt_2[i] *= deg2rad; }
-        ur5e::go_to_joint(rotBegJnt_2, 8);
-        if (scanKeyboard() == 'q') {return;}
-        ur5e::tcp_pivot_2d({376, -110, -50*deg2rad}, 15);
-        if (scanKeyboard() == 'q') {return;}
-        ur5e::print_tcp_position(71);
-        ur5e::body_twist(-1, 0.2);
-        wsgConfig.push({73, 10});
-        // if (scanKeyboard() == 'q') {return;}
-        // ur5e::tcp_pivot_2d({406.529, -46.0023, 45*deg2rad}, 15);
+        for (int i=0; i<1000; ++i) {
+          hfvcShared.push_queue({0,-0.5, 0,0});
+        }
         break;
       case 'p':
         break;
@@ -53,7 +45,7 @@ void pick_and_place(double hoverHeight) {
   Mat4d obj2elk, elk2base, hoverPose, gripPose, rlsPose;
   double peakHeight = 26, pickHeight, gripWidth = 52, rlsWidth = 60;
   rlsPose << 1,0,0,350, 0,-1,0,DH_D4, 0,0,-1,peakHeight, 0,0,0,1;
-  THETA jointState = urConfig.get_state();
+  THETA jointState = ur5eShared.copy_data();
   ur_kinematics(jointState, elk2base);
   obj2elk = objState.get_marker();
 
@@ -85,7 +77,7 @@ void object_rotation() {
 }
 
 void finger_pivot() {
-  THETA jointState = urConfig.get_state();
+  THETA jointState = ur5eShared.copy_data();
   Arr3d state;
 
   double leftFingerX, leftFingerZ, tipAngle;
@@ -120,5 +112,24 @@ void cube_test_1() {
   if (scanKeyboard() == 'q') {return;}
   ur5e::body_twist(-18, 1.6);
   wsgConfig.push({52, 10});
+}
+
+// 力位混合伺服控制
+Arr3d hfvc_executer(std::vector<double> hfvcCmd, Arr3d state, std::vector<double> force) {
+  double fdx=hfvcCmd[0], fdz=hfvcCmd[1], vdx = hfvcCmd[2], vdz = hfvcCmd[3];
+  double fx=force[0], fz=force[1];
+  // 力控
+  double fdPrj = fx*fdx + fz*fdz;
+  if (fabs(fdPrj) < 200) {
+    state[0] += fdx;
+    state[1] += fdz;
+  } else if (fabs(fdPrj) > 700) {
+    state[0] -= fdx;
+    state[1] -= fdz;
+  }
+  // 位置控制
+  state[0] += vdx;
+  state[1] += vdz;
+  return state;
 }
 

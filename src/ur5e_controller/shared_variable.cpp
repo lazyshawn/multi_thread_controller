@@ -1,25 +1,25 @@
 #include "ur5e_controller/shared_variable.h"
 
-UrConfig::UrConfig() : isReady(false){
+Ur5eShared::Ur5eShared() : isReady(false){
 }
 
 /* **************** 判断机械臂是否已经启动 **************** */
-void UrConfig::set_ready() {
+void Ur5eShared::set_ready() {
   isReady = true;
 }
 
-bool UrConfig::is_ready() {
+bool Ur5eShared::is_ready() {
   return isReady;
 }
 
 /* 添加后续路径 */
-void UrConfig::push(THETA joint) {
+void Ur5eShared::push(THETA joint) {
   std::scoped_lock lock(urMutex);
   path.emplace(std::move(joint));
   // urCond.notify_one();
 }
 
-bool UrConfig::pop(THETA& refJoint) {
+bool Ur5eShared::pop(THETA& refJoint) {
   std::scoped_lock lock(urMutex);
   if (path.empty()) return false;
   refJoint = std::move(path.front());
@@ -27,11 +27,11 @@ bool UrConfig::pop(THETA& refJoint) {
   return true;
 }
 
-bool UrConfig::empty() const {
+bool Ur5eShared::empty() const {
   return path.empty();
 }
 
-bool UrConfig::clean() {
+bool Ur5eShared::clean() {
   if (!path.empty()) {
     std::cout << "Path is still incomplete: "<< path.size() << std::endl;
     return false;
@@ -42,12 +42,12 @@ bool UrConfig::clean() {
   return true;
 }
 
-THETA UrConfig::get_state() {
+THETA Ur5eShared::copy_data() {
   std::scoped_lock guard(urMutex);
   return jointState;
 }
 
-void UrConfig::update_state(THETA jointState_){
+void Ur5eShared::update_data(THETA jointState_){
   std::scoped_lock guard(urMutex);
   jointState = jointState_;
 }

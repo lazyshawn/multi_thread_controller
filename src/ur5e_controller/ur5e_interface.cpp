@@ -2,11 +2,11 @@
 
 namespace ur5e {
 bool check_ur_state() {
-  if(!urConfig.is_ready()) {
+  if(!ur5eShared.is_ready()) {
     ROS_WARN("UR is not ready!");
     // miniROS::shutdown();
   }
-  return urConfig.is_ready();
+  return ur5eShared.is_ready();
 }
 
 /*************************************************************************
@@ -14,19 +14,19 @@ bool check_ur_state() {
 *************************************************************************/
 void go_to_joint(THETA joint, double time) {
   check_ur_state();
-  THETA jntCmd = std::vector<double>(6), origJoint = urConfig.get_state();
+  THETA jntCmd = std::vector<double>(6), origJoint = ur5eShared.copy_data();
   double prop, dt;
   bool finish = false;
   prop = dt = UR_SERVO_TIME / time;
   while (!finish) {
     finish = traj_interpolate(origJoint, joint, prop, jntCmd);
-    urConfig.push(jntCmd);
+    ur5eShared.push(jntCmd);
     prop += dt;
   }
 }
 
 void go_to_pose(Mat4d tranMat, double time) {
-  THETA curTheta = urConfig.get_state();
+  THETA curTheta = ur5eShared.copy_data();
   THETA jntCmd = ur_InverseKinematics(tranMat, curTheta);
   go_to_joint(jntCmd, time);
 }
@@ -48,7 +48,7 @@ void go_home(double time) {
  * @ param: time - 运动总时间
 *************************************************************************/
 void body_twist(double distance, double time) {
-  THETA jointState = urConfig.get_state();
+  THETA jointState = ur5eShared.copy_data();
   Mat4d tranMat;
   ur_kinematics(jointState, tranMat);
   ur5e::tcp_move_2d({tranMat(0,0)*distance, tranMat(2,0)*distance, 0}, time);
@@ -57,7 +57,7 @@ void body_twist(double distance, double time) {
 void tcp_move_2d(Arr3d movement, double time){
   THETA theta = {0, 0, 0, 0, -M_PI/2, M_PI/2};
   // 开始时系统的状态
-  THETA curTheta = urConfig.get_state(), jntCmd;
+  THETA curTheta = ur5eShared.copy_data(), jntCmd;
   Arr3d stateInit, refState;
   plane_kinematics(curTheta, stateInit);
   double x0 = stateInit[0], z0 = stateInit[1], q0 = stateInit[2];
@@ -69,7 +69,7 @@ void tcp_move_2d(Arr3d movement, double time){
       refState[i] = stateInit[i] + movement[i]*prop;
     }
     jntCmd = plane_inv_kinematics(refState);
-    urConfig.push(jntCmd);
+    ur5eShared.push(jntCmd);
     prop += dt;
   }
 }
@@ -80,7 +80,7 @@ void tcp_move_2d(Arr3d movement, double time){
  * @ note : tcpState 与 twist 的转角方向定义相反;
 *************************************************************************/
 void tcp_pivot_2d(Arr3d twist, double time) {
-  THETA jointState = urConfig.get_state();
+  THETA jointState = ur5eShared.copy_data();
   THETA jntCmd = {0, 0, 0, 0, -M_PI/2, M_PI/2};
   // 初始状态
   Arr3d curState, refState;
@@ -99,7 +99,7 @@ void tcp_pivot_2d(Arr3d twist, double time) {
     refState[0] = xc + radius*cos(alpha0+dq*prop);
     refState[1] = zc + radius*sin(alpha0+dq*prop);
     jntCmd = plane_inv_kinematics(refState);
-    urConfig.push(jntCmd);
+    ur5eShared.push(jntCmd);
     prop += dt;
   }
 }
@@ -109,7 +109,7 @@ void tcp_pivot_2d(Arr3d twist, double time) {
 * @ Note : q_elk = q_234; q_actuator = q_234 + pi;
 *************************************************************************/
 void plane_screw(Arr3d screw, double time) {
-  THETA jointState = urConfig.get_state(), jntCmd;
+  THETA jointState = ur5eShared.copy_data(), jntCmd;
   Arr3d state, detState;
   plane_kinematics(jointState, state);
   for (int i=0; i<3; ++i) detState[i] = screw[i] * UR_SERVO_TIME / time;
@@ -118,13 +118,13 @@ void plane_screw(Arr3d screw, double time) {
   while (prop <= 1) {
     for (int i=0; i<3; ++i) state[i] += detState[i];
     jntCmd = plane_inv_kinematics(state);
-    urConfig.push(jntCmd);
+    ur5eShared.push(jntCmd);
     prop += dt;
   }
 }
 
 std::vector<double> print_tcp_position(double gripWidth) {
-  THETA jointState = urConfig.get_state();
+  THETA jointState = ur5eShared.copy_data();
   Arr3d state;
   double leftFingerX, leftFingerZ, tipAngle, rightFingerX, rightFingerZ;
   double offset = gripWidth/2 + 2;
@@ -145,11 +145,11 @@ std::vector<double> print_tcp_position(double gripWidth) {
 }
 
 void wait_path_clear() {
-  while(!urConfig.empty());
+  while(!ur5eShared.empty());
 }
 
 void print_current_info() {
-  THETA jointState = urConfig.get_state();
+  THETA jointState = ur5eShared.copy_data();
   Mat4d tranMat;
   ur_kinematics(jointState, tranMat);
   ROS_INFO("Current Information:");
@@ -159,6 +159,11 @@ void print_current_info() {
   }
   std::cout << std::endl;
   std::cout << "-------- Transform Matrix --------\n" << tranMat << std::endl;
+  Arr3d state;
+  plane_kinematics(jointState, state);
+  std::cout << "-------- Grip State --------\n"
+            << state[0] << "    " << state[1] << "    " << state[2] * rad2deg
+            << std::endl;
 }
 
 void teleoperate() {
@@ -191,7 +196,7 @@ void teleoperate() {
       case 'I': ur5e::tcp_move_2d({0,0,-5*deg2rad}, 1); break;
 
       case 't':
-        jointState = urConfig.get_state();
+        jointState = ur5eShared.copy_data();
         ur_kinematics(jointState, tranMat);
         ur5e::tcp_move_2d({tranMat(0,0)*10, tranMat(2,0)*10, 0}, 0.2*10);
         break;

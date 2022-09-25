@@ -1,6 +1,6 @@
 #include "ur5e_controller/ur5e_thread.h"
 
-UrConfig urConfig;
+Ur5eShared ur5eShared;
 Recorder urRecord(7);
 
 /*************************************************************************
@@ -20,10 +20,10 @@ void ur5e_controller() {
   usleep(500); // 机械臂初始化，确保能TCP通信连上(accept)
   ur.setServojTime((double)UR_PERIOD / NSEC_PER_SEC);
   ur.uploadProg();
-  urConfig.set_ready();
+  ur5eShared.set_ready();
   // 初始状态下机械臂关节位置
   jointState = ur.rt_interface_->robot_state_->getQActual();
-  urConfig.update_state(jointState);
+  ur5eShared.update_data(jointState);
   // 完成初始化
   ROS_INFO("P[%d] T[%Lf] UR5e thread is Ready!", get_tid(), get_current_time());
 
@@ -42,10 +42,10 @@ void ur5e_controller() {
     urRecord.push_item(std::vector<double>(1, time));
     // 读取机械臂关节角位置
     jointState = ur.rt_interface_->robot_state_->getQActual();
-    urConfig.update_state(jointState);
+    ur5eShared.update_data(jointState);
     urRecord.push_item(jointState);
     // 弹出路径并发送 servoj 指令
-    if (urConfig.pop(refJoint)) {
+    if (ur5eShared.pop(refJoint)) {
       // 急停保护
       for (int i = 0; i < 6; ++i) {
         delQ = abs(refJoint[i] - jointState[i]);

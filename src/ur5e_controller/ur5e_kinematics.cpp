@@ -38,13 +38,13 @@ bool plane_kinematics(THETA jointState, std::array<double,3>& state) {
   calcJnt(jointState);
   state[0] = DH_A2*c2 + DH_A3*c23 - DH_D5*s234 - DH_D6*c234;
   state[1] = DH_D1 - DH_A2*s2 - DH_A3*s23 - DH_D5*c234 + DH_D6*s234;
-  state[2] = q2 + q3 + q4;
+  state[2] = -(q2 + q3 + q4);
   return true;
 }
 
 // 平面内运动的逆解(降低为三自由度)
 THETA plane_inv_kinematics(std::array<double,3> state) {
-  double x = state[0], z = state[1], q = state[2];
+  double x = state[0], z = state[1], q = -1*state[2];
   double c234 = cos(q), s234 = sin(q), c3, s3;
   double A = x + DH_D5*s234 + DH_D6*c234;
   double B = -z - DH_D5*c234 + DH_D6*s234 + DH_D1;

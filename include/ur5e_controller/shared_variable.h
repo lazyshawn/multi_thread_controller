@@ -4,7 +4,7 @@
 #include "miniros/miniros.h"
 #include "ur5e_kinematics.h"
 
-class UrConfig {
+class Ur5eShared {
 private:
   bool isReady;
   std::queue<THETA> path;
@@ -13,15 +13,17 @@ private:
   std::condition_variable urCond;
 
 public:
-  UrConfig();
+  Ur5eShared();
 
   void set_ready();
   bool is_ready();
-  THETA get_state();
-  void update_state(THETA jointState_);
+  THETA copy_data();
+  void update_data(THETA jointState_);
   void push(THETA refJoint);
   bool pop(THETA& refJoint);
   bool empty() const;
   bool clean();
 };
+
+typedef THETA Ur5eData;
 

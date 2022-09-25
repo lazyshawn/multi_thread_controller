@@ -5,6 +5,7 @@
 #include "time_manager.h"
 #include "user_interface.h"
 #include "data_export.h"
+#include <functional>   // std::bind
 
 extern ThreadManager threadmanager;
 extern std::vector<std::thread> threadPool;

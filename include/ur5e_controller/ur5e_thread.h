@@ -6,7 +6,7 @@
 #define UR_PERIOD (8000000)
 #define UR_SERVO_TIME (double)UR_PERIOD/NSEC_PER_SEC
 
-extern UrConfig urConfig;
+extern Ur5eShared ur5eShared;
 
 void ur5e_controller();
 

@@ -1,7 +1,7 @@
 #include "miniros/miniros.h"
 #include "ur5e_controller/ur5e_interface.h"
 
-extern UrConfig urConfig;
+extern Ur5eShared ur5eShared;
 ThreadManager threadmanager(1);
 
 int main(int argc, char** argv) {
