@@ -7,6 +7,8 @@ typedef std::vector<double> DydwData;
 
 class DydwShared {
 public:
+  std::vector<double> F0 = {0.500275, 32.98784, -0.13148458, 30.568432};
+  std::vector<double> G = {32.91205, 30.928371};
   std::vector<double> copy_data();
   void update_data(std::vector<double> dydwData);
 

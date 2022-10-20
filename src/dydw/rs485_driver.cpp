@@ -176,7 +176,12 @@ int RS485Device::connect(std::string ttyName, int baud, int dataBits,
   return 0;
 }
 
-// 读连续寄存器
+/*************************************************************************
+ * @ Brief: 读连续寄存器
+ * @ Data: 
+ *   addr: 起始寄存器地址
+ *   num:  读取的寄存器数量
+*************************************************************************/
 std::vector<uint8_t> RS485Device::readMulReg(uint16_t addr, uint16_t num) {
   const int cmdLen = 8, rxLen = 5+2*num;
   uint8_t hNum = num>>8, lNum = num&0x00FF, hAddr = addr>>8, lAddr = addr&0x00FF;

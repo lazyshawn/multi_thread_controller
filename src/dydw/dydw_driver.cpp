@@ -12,7 +12,7 @@ DYDWDriver::DYDWDriver(std::string tty, uint8_t ID) : ttyName(tty), slaveID(ID) 
 
 int DYDWDriver::init(std::string tty, uint8_t ID) {
   ttyName = tty;
-  rs485.connect(ttyName, 19200, 8, 0, 1);
+  rs485.connect(ttyName, 115200, 8, 0, 1);
   zero();
   return 1;
 }
@@ -22,10 +22,10 @@ int DYDWDriver::zero() {
   return 1;
 }
 
-std::vector<float> DYDWDriver::read() {
+std::vector<float> DYDWDriver::read(int chNum) {
   std::vector<uint8_t> regVal;
   std::vector<float> val;
-  regVal = rs485.readMulReg(0x0100, 8);
+  regVal = rs485.readMulReg(0x0100, chNum*2);
   // 将每一路的寄存器数据依次转化为 flaot 类型
   for (int i=0; i<regVal.size(); i=i+4) {
     // 读到的原始数据
@@ -34,12 +34,6 @@ std::vector<float> DYDWDriver::read() {
     // }
     val.emplace_back(hex2float(&regVal[i]));
   }
-  // 转换为浮点数后的数据
-  // std::cout << std::endl;
-  // for (int i=0; i<regVal.size()/4; ++i) {
-  //   printf("%f ", val[i]);
-  // }
-  // std::cout << std::endl;
   return val;
 }
 

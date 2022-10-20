@@ -31,31 +31,16 @@ void readPort(SerialPort serial) {
 int main(int argc, char** argv) {
   RS485Device sensor;
   DYDWDriver dydw;
+  std::vector<float> data;
+  dydw.init("/dev/ttyUSB0");
 
   char command;
   while (miniROS::OK()) {
-    command = scanKeyboard();
-    switch(command) {
-      case 'r':
-        dydw.read();
-        break;
-      case 'w':
-        break;
-      break;
-      // 清零
-      case 's':
-        dydw.init("/dev/ttyUSB0");
-        // sensor.connect("/dev/ttyUSB0", 19200, 8, 0, 1);
-        break;
-      case 27:
-        std::cout << "hello" << std::endl;
-        miniROS::shutdown();
-        break;
-      default:
-        std::cout << "Unknow command" << std::endl;
-        break;
+    data = dydw.read(4);
+    for (int i=0; i<4; ++i) {
+      std::cout << data[i] << " ";
     }
-
+    std::cout << std::endl;
   }
   std::cout << threadPool.size() << std::endl;
   miniROS::joinall();

@@ -7,9 +7,11 @@ THETA rotBegJnt_2 = {0, -76.319, 117.504, -113.314, -90, 90};
 
 Mat4d zeroPose, rlsPose;
 std::vector<double> data = std::vector<double>(6,0);
+extern Task task;
 
 void main_menu() {
   THETA joint;
+  Mat4d pose;
   while (miniROS::OK()) {
     int key = scanKeyboard();
     switch (key) {
@@ -21,10 +23,16 @@ void main_menu() {
         ROS_INFO("You're in ur5e teleoperate mode.");
         ur5e::teleoperate();
         break;
+      case 'f':
+        ROS_INFO("Ready to calibrate force sensor.");
+        calib_force_sensor();
+        break;
       case 't':
-        for (int i=0; i<1000; ++i) {
-          hfvcShared.push_queue({0,-0.5, 0,0});
-        }
+        wsgConfig.push({78,40});
+        pose << 1,0,0,350, 0,-1,0,DH_D4, 0,0,-1,-20, 0,0,0,1;
+        ur5e::go_to_pose(pose, 5);
+        ur5e::wait_path_clear();
+        task = Task::press;
         break;
       case 'p':
         break;
@@ -37,8 +45,84 @@ void main_menu() {
   }
 }
 
-void devices_home() {
-  ur5e::go_home(3);
+void calib_force_sensor() {
+  Recorder calibRecord1(4), calibRecord2(4);
+  std::vector<double> data1(4,0), data2(4,0);
+  bool flag = false;
+
+  // 读取传感器数据
+  std::vector<double> force = dydwShared.copy_data();
+  // 读取机械臂关节角
+  THETA curJoint = ur5eShared.copy_data();
+  THETA jntCmd = {0, 0, 0, 0, -M_PI/2, M_PI/2}, refJoint = curJoint;
+  Arr3d curState, refState;
+
+  while (miniROS::OK()) {
+    if (flag) break;
+    int key = scanKeyboard();
+    switch (key) {
+      // tcp 在 {base} 下的平移
+      case 'h': ur5e::tcp_move_2d({-1,0,0}, 0.2); break;
+      case 'H': ur5e::tcp_move_2d({-10,0,0}, 2); break;
+      case 'j': ur5e::tcp_move_2d({0,-1,0}, 0.2); break;
+      case 'J': ur5e::tcp_move_2d({0,-10,0}, 2); break;
+      case 'k': ur5e::tcp_move_2d({0,1,0}, 0.2); break;
+      case 'K': ur5e::tcp_move_2d({0,10,0}, 2); break;
+      case 'l': ur5e::tcp_move_2d({1,0,0}, 0.2); break;
+      case 'L': ur5e::tcp_move_2d({10,0,0}, 2); break;
+      // 旋转
+      case 'u': ur5e::tcp_move_2d({0,0,1*deg2rad}, 0.2); break;
+      case 'U': ur5e::tcp_move_2d({0,0,5*deg2rad}, 1); break;
+      case 'i': ur5e::tcp_move_2d({0,0,-1*deg2rad}, 0.2); break;
+      case 'I': ur5e::tcp_move_2d({0,0,-5*deg2rad}, 1); break;
+      case 10: // <ENTER> 记录一组数据
+        curJoint = ur5eShared.copy_data();
+        plane_kinematics(curJoint, curState);
+        force = dydwShared.copy_data();
+        for (int i=0; i<4; ++i) {
+          std::cout << force[i] << " ";
+        }
+        std::cout << std::endl;
+        // 第一行
+        data1[0] = force[0];
+        data1[1] = -cos(curState[2]);  // x2
+        data1[2] = 1; data1[3] = 0;
+        calibRecord1.data_record(data1);
+        // 第二行
+        data1[0] = force[1];
+        data1[1] = -sin(curState[2]);  // z2
+        data1[2] = 0; data1[3] = 1;
+        calibRecord1.data_record(data1);
+        // 传感器2
+        data2[0] = force[2];
+        data2[1] = cos(curState[2]);   // -x2
+        data2[2] = 1; data2[3] = 0;
+        calibRecord2.data_record(data2);
+        data2[0] = force[3];
+        data2[1] = -sin(curState[2]);  // z2
+        data2[2] = 0; data2[3] = 1;
+        calibRecord2.data_record(data2);
+        break;
+      case 'p':
+        curJoint = ur5eShared.copy_data();
+        plane_kinematics(curJoint, curState);
+        force = dydwShared.copy_data();
+        actual_force(force,curState[2]);
+        for (int i=0; i<4; ++i) {
+          std::cout << force[i] << " ";
+        }
+        std::cout << std::endl;
+        break;
+      case 27: case 'q': // <ESC>
+        ROS_INFO("Back to main menu.");
+        flag = true;
+        break;
+      default:
+        break;
+    }
+  }
+  calibRecord1.data_export("calib_f1.txt");
+  calibRecord2.data_export("calib_f2.txt");
 }
 
 void pick_and_place(double hoverHeight) {
@@ -71,9 +155,6 @@ void pick_and_place(double hoverHeight) {
   ur5e::go_to_pose(rlsPose, 3);
   ur5e::wait_path_clear();
   wsgConfig.push({rlsWidth,40});
-}
-
-void object_rotation() {
 }
 
 void finger_pivot() {
@@ -112,24 +193,5 @@ void cube_test_1() {
   if (scanKeyboard() == 'q') {return;}
   ur5e::body_twist(-18, 1.6);
   wsgConfig.push({52, 10});
-}
-
-// 力位混合伺服控制
-Arr3d hfvc_executer(std::vector<double> hfvcCmd, Arr3d state, std::vector<double> force) {
-  double fdx=hfvcCmd[0], fdz=hfvcCmd[1], vdx = hfvcCmd[2], vdz = hfvcCmd[3];
-  double fx=force[0], fz=force[1];
-  // 力控
-  double fdPrj = fx*fdx + fz*fdz;
-  if (fabs(fdPrj) < 200) {
-    state[0] += fdx;
-    state[1] += fdz;
-  } else if (fabs(fdPrj) > 700) {
-    state[0] -= fdx;
-    state[1] -= fdz;
-  }
-  // 位置控制
-  state[0] += vdx;
-  state[1] += vdz;
-  return state;
 }
 

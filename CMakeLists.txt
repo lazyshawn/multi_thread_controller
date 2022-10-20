@@ -122,7 +122,7 @@ target_link_libraries(uskin_bin miniros_lib uskin_driver)
 add_executable(ur5e_bin
   src/ur5e_controller/ur5e_main.cpp
 )
-target_link_libraries(ur5e_bin miniros_lib ur5e_driver)
+target_link_libraries(ur5e_bin miniros_lib ur5e_driver dydw_driver)
 # # camera_bin
 # add_executable(camera_bin
 #   src/realsense/camera_main.cpp
@@ -139,8 +139,8 @@ target_link_libraries(dydw_bin
 add_executable(main
   src/master/main.cpp
   src/master/master_shared.cpp
-  src/master/master_thread.cpp
   src/master/master_interface.cpp
+  src/master/master_thread.cpp
 )
 target_link_libraries(main
   miniros_lib wsg_driver uskin_driver ur5e_driver camera_driver dydw_driver

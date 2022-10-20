@@ -16,7 +16,7 @@ public:
 
   int init(std::string tty, uint8_t ID = 0x01);
   int zero();
-  std::vector<float> read();
+  std::vector<float> read(int chNum);
 };
 
 #endif

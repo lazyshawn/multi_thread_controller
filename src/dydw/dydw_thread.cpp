@@ -33,7 +33,7 @@ void dydw_controller() {
     time = get_current_time() - startTime;
     dydwRecord.push_item(std::vector<double>(1, time));
     // 读取传感器数据
-    dataF = dydw.read();
+    dataF = dydw.read(4);
     dataD = std::vector<double>(dataF.begin(), dataF.end());
     dydwRecord.push_item(dataD);
     // 同步数据

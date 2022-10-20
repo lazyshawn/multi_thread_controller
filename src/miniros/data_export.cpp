@@ -30,6 +30,7 @@ void Recorder::data_record(std::vector<double> data) {
   return;
 }
 
+// 记录一行信息
 void Recorder::data_record() {
   data_record(itemVec);
 }
@@ -59,6 +60,7 @@ void Recorder::data_export(std::string fname) {
   printf("Data saved: %s.\n", fname.c_str());
 }
 
+// 为一行信息添加新的条目(新增列)
 void Recorder::push_item(std::vector<double> item) {
   copy(item.begin(), item.end(), itemVec.begin()+colIndex);
   colIndex += item.size();

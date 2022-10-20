@@ -1,4 +1,5 @@
 #include "ur5e_controller/ur5e_interface.h"
+#include "dydw/dydw_thread.h"
 
 namespace ur5e {
 bool check_ur_state() {
@@ -127,16 +128,16 @@ std::vector<double> print_tcp_position(double gripWidth) {
   THETA jointState = ur5eShared.copy_data();
   Arr3d state;
   double leftFingerX, leftFingerZ, tipAngle, rightFingerX, rightFingerZ;
-  double offset = gripWidth/2 + 2;
+  double offset = gripWidth/2 - 3;
   std::vector<double> fingerPos;
 
   plane_kinematics(jointState, state);
   tipAngle = state[2] + M_PI/2;
-  leftFingerX = state[0] - cos(tipAngle) * offset;
+  leftFingerX = state[0] + cos(tipAngle) * offset;
   leftFingerZ = state[1] + sin(tipAngle) * offset;
   std::cout << "angle of elk [deg]: " << state[2]*rad2deg << std::endl;
   std::cout << "leftFingerX, leftFingerZ : " << leftFingerX << ", "<< leftFingerZ << std::endl;
-  rightFingerX = state[0] + cos(tipAngle) * offset;
+  rightFingerX = state[0] - cos(tipAngle) * offset;
   rightFingerZ = state[1] - sin(tipAngle) * offset;
   std::cout << "rightFingerX, rightFingerZ : " << rightFingerX << ", "<< rightFingerZ << std::endl;
 
@@ -167,6 +168,7 @@ void print_current_info() {
 }
 
 void teleoperate() {
+  std::vector<double> tmp;
   check_ur_state();
   std::vector<double> ori_angle = {
       0, -98.9*deg2rad, 117.8*deg2rad, -108.9*deg2rad, -90*deg2rad, 90*deg2rad};
@@ -202,6 +204,11 @@ void teleoperate() {
         break;
       case 'p':
         ur5e::print_current_info();
+        // tmp = dydwShared.copy_data();
+        // for (int i=0; i<4; ++i) {
+        //   std::cout << tmp[i] << "  ";
+        // }
+        std::cout << std::endl;
         break;
       case 'q':
         ROS_INFO("Back to main menu.");
