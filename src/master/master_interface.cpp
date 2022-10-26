@@ -20,6 +20,7 @@ void main_menu() {
         ur5e::go_to_pose(zeroPose, 8);
         break;
       case 'r':
+        task = Task::teleopr;
         ROS_INFO("You're in ur5e teleoperate mode.");
         ur5e::teleoperate();
         break;
@@ -27,12 +28,39 @@ void main_menu() {
         ROS_INFO("Ready to calibrate force sensor.");
         calib_force_sensor();
         break;
-      case 't':
+      // 任务1: 翻转魔方并抓取
+      case '1':
         wsgConfig.push({78,40});
         pose << 1,0,0,350, 0,-1,0,DH_D4, 0,0,-1,-20, 0,0,0,1;
         ur5e::go_to_pose(pose, 5);
         ur5e::wait_path_clear();
         task = Task::press;
+        break;
+      // 任务2: 翻转圆顶矩形
+      case '2':
+        wsgConfig.push({52,40});
+        pose << 1,0,0,416, 0,-1,0,DH_D4, 0,0,-1,-60, 0,0,0,1;
+        ur5e::go_to_pose(pose, 5);
+        // joint = plane_inv_kinematics({418, -30, 70*deg2rad});
+        // ur5e::go_to_joint(joint, 5);
+        ur5e::wait_path_clear();
+        task = Task::task2_press;
+        break;
+      // 任务3: 翻转圆顶矩形2
+      case '3':
+        // wsgConfig.push({52,40});
+        // pose << 1,0,0,436, 0,-1,0,DH_D4, 0,0,-1,-52, 0,0,0,1;
+        // ur5e::go_to_pose(pose, 5);
+
+        pose << 1,0,0,410, 0,-1,0,DH_D4, 0,0,-1,-52, 0,0,0,1;
+        ur5e::go_to_pose(pose, 1);
+        ur5e::wait_path_clear();
+        pose << 1,0,0,434, 0,-1,0,DH_D4, 0,0,-1,-52, 0,0,0,1;
+        ur5e::go_to_pose(pose, 2);
+
+        ur5e::wait_path_clear();
+        task = Task::task2_press_2;
+      case '4':
         break;
       case 'p':
         break;

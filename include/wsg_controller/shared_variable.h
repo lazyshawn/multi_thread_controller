@@ -9,7 +9,7 @@ typedef std::vector<double> WSGCMD;
 class WSGConfig {
 private:
   bool isReady;
-  // pos + vel
+  // pos(mm) + vel(mm/s)
   std::queue<WSGCMD> data;
   double pos, vel;
   std::mutex wsgMutex;

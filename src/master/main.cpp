@@ -6,6 +6,7 @@ int main(int argc, char** argv) {
   miniROS::node(dydw_controller);
   miniROS::node(planner_controller);
   miniROS::node(wsg_controller);
+  miniROS::node(camera_controller);
 
   ROS_INFO("P[%d] Main thread is Ready!", get_tid());
   threadmanager.set_threadNum(threadPool.size());

@@ -3,6 +3,7 @@ build
 lib/*
 doc/device_manual
 compile_commands.json
+exp_record
 
 !lib/libGinkgo_Driver.so
 
