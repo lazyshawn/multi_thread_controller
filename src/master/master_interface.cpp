@@ -21,6 +21,7 @@ void main_menu() {
         break;
       case 'r':
         task = Task::teleopr;
+        wsgConfig.push({58,40});
         ROS_INFO("You're in ur5e teleoperate mode.");
         ur5e::teleoperate();
         break;
@@ -61,6 +62,14 @@ void main_menu() {
         ur5e::wait_path_clear();
         task = Task::task2_press_2;
       case '4':
+        wsgConfig.push({53,40});
+        // wsgConfig.push({58,40});
+        pose << 1,0,0,362, 0,-1,0,DH_D4, 0,0,-1,-57, 0,0,0,1;
+        // pose << 1,0,0,362, 0,-1,0,DH_D4, 0,0,-1,-52, 0,0,0,1;
+        ur5e::go_to_pose(pose, 5);
+        ur5e::wait_path_clear();
+        task = Task::task4_press;
+        // task = Task::task4_rotate;
         break;
       case 'p':
         break;

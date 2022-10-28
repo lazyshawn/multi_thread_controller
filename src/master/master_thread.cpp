@@ -60,10 +60,203 @@ void planner_controller() {
     } else if (task == Task::task2_lay_down_2) {
       task2_lay_down_2();
     }
+    // 任务4
+    else if (task == Task::task4_press) {
+      task4_press();
+    } else if (task == Task::task4_rotate) {
+      task4_rotate();
+    } else if (task == Task::task4_pivot) {
+      task4_pivot();
+    } else if (task == Task::task4_grasp) {
+      task4_grasp();
+    }
 
     /* calculate next shot | 设置下一个线程恢复的时间 */
     timer_incre(ts, PLAN_PERIOD);
   } // while (1)
+}
+
+double dx, dz;
+void task4_press() {
+  // 读取传感器数据
+  std::vector<double> force = dydwShared.copy_data();
+  // 读取机械臂关节角
+  THETA curJoint = ur5eShared.copy_data();
+  THETA jntCmd = {0, 0, 0, 0, -M_PI/2, M_PI/2}, refJoint = curJoint;
+  Arr3d curState;
+  plane_kinematics(curJoint, curState);
+  // 计算实际压力
+  actual_force(force, curState[2]);
+  std::vector<double> fDirs = contact_norm(force, curState[2]);
+  double f1 = fDirs[4], f2 = fDirs[5];
+
+  if (abs(f1) > 2000) {
+    // 压力过大直接退出
+    ROS_ERROR("Excessive force detected. f1 = %lf", f1);
+    miniROS::shutdown();
+    return;
+  } else if (force[0] > -1500) {
+    curState[0] -= 0.2;
+  } else if (force[0] < -2000){
+    curState[0] += 0.2;
+  } else {
+    ROS_INFO("task_press finish. Fy1 = %lf", force[0]);
+    task = Task::task4_rotate;
+    dx = curState[0] - 335;
+    dz = curState[1] + 57;
+    std::cout << dx << ", " << dz << std::endl;
+    // task = Task::idle;
+  }
+  refJoint = plane_inv_kinematics(curState);
+
+  planner2ur(curJoint, refJoint);
+}
+
+void task4_rotate() {
+  static double xo = 135, zo = -99;
+  // static double l1 = 200.06, l2 = 205, alpha = 0.025, beta = 0.2213;
+  static double l1 = 200.25, l2 = 203.96, alpha = 0.050, beta = 0.1974;
+  static double theta = 0, dq = 0.04*deg2rad;
+  static double a11 = l2*sin(beta), a12 = l1*cos(alpha), a21 = l1*sin(alpha),
+                a22 = l2*cos(beta);
+
+  // 读取传感器数据
+  std::vector<double> force = dydwShared.copy_data();
+  // 读取机械臂关节角
+  THETA curJoint = ur5eShared.copy_data();
+  THETA jntCmd = {0, 0, 0, 0, -M_PI/2, M_PI/2}, refJoint = curJoint;
+  Arr3d curState;
+  plane_kinematics(curJoint, curState);
+  // 计算实际压力
+  actual_force(force, curState[2]);
+  std::vector<double> fDirs = contact_norm(force, curState[2]);
+  double f1 = fDirs[4], f2 = fDirs[5];
+
+  // 接触点位置
+  double x = curState[0]-dx, z = curState[1]-dz;
+  double sq = abs((x-xo)*a11-(z-zo)*a12), cq = abs((z-zo)*a21-(x-xo)*a22);
+  theta = atan2(sq, cq);
+
+  // std::cout << "x = " << x << ", z = " << z << std::endl;
+  // std::cout << "sq = " << sq << ", cq = " << cq << std::endl;
+  // std::cout << "theta = " << theta << std::endl;
+  // std::cout << "state[0] = " << curState[0] << ", state[1] = " << curState[1] << std::endl;
+
+    theta += dq;
+    curState[0] = l1*cos(theta-alpha) + xo + dx;
+    curState[1] = l2*sin(theta+beta) + zo + dz;
+  // 终止条件
+  if (theta >= 56*deg2rad) {
+    ROS_INFO("task4_rotate finish. F1 = %lf", f1);
+    task = Task::task4_pivot;
+  }
+  if (abs(f1) > 2500) {
+    // 压力过大直接退出
+    ROS_ERROR("Excessive force detected. F1 = %lf", f1);
+    miniROS::shutdown();
+    return;
+  } else if (abs(f1) < 1200 || abs(force[0])<800) {
+    curState[0] -= fDirs[0]*0.42;
+    curState[1] -= fDirs[1]*0.18;
+  } else if (abs(f1) > 2000) {
+    curState[0] += fDirs[0]*0.02;
+    curState[1] += fDirs[1]*0.02;
+  } else {
+    // theta += dq;
+    // curState[0] = l1*cos(theta-alpha) + xo + dx;
+    // curState[1] = l2*sin(theta+beta) + zo + dz;
+  }
+
+  refJoint = plane_inv_kinematics(curState);
+
+  planner2ur(curJoint, refJoint);
+}
+
+void task4_pivot() {
+  // 读取传感器数据
+  std::vector<double> force = dydwShared.copy_data();
+  // 读取机械臂关节角
+  THETA curJoint = ur5eShared.copy_data();
+  THETA jntCmd = curJoint, refJoint = curJoint;
+  Arr3d curState;
+  plane_kinematics(curJoint, curState);
+  // 计算实际压力
+  actual_force(force, curState[2]);
+  std::vector<double> fDirs = contact_norm(force, curState[2]);
+  double f1 = fDirs[4], f2 = fDirs[5];
+
+  if (f1 > 3200 || f2 > 2000) {
+    ROS_ERROR("Excessive force detected.\nf1 = %lf, f2 = %lf", f1, f2);
+    miniROS::shutdown();
+    return;
+  }
+
+  // 终止条件
+  if (f2 > 40) {
+    ROS_INFO("task4_pivot finish. F1 = %lf", f1);
+    wsgConfig.push({64,10});
+    std::cout << "(x,z) = " << curState[0] << ", " << curState[1] << std::endl;
+    task = Task::task4_grasp;
+  }
+  // 计算手指位置
+  std::vector<double> figPos = calc_finger_pos(curState, 41);
+  tcp_pivot(figPos[0], figPos[1], -0.2*deg2rad, curState);
+
+  curState[0] -= 0.11;
+  // curState[1] += 0.01;
+  if (abs(f1) < 1000) {
+    curState[0] -= fDirs[0]*0.2;
+    curState[1] -= fDirs[1]*0.2;
+  } else if (abs(f1) > 1200) {
+    // curState[0] += fDirs[0]*0.8;
+    // curState[1] += fDirs[1]*0.8;
+    curState[1] += 0.24;
+  }
+
+  refJoint = plane_inv_kinematics(curState);
+
+  planner2ur(curJoint, refJoint);
+}
+
+void task4_grasp() {
+  // 读取传感器数据
+  std::vector<double> force = dydwShared.copy_data();
+  // 读取机械臂关节角
+  THETA curJoint = ur5eShared.copy_data();
+  THETA jntCmd = curJoint, refJoint = curJoint;
+  Arr3d curState;
+  plane_kinematics(curJoint, curState);
+  // 计算实际压力
+  actual_force(force, curState[2]);
+  std::vector<double> fDirs = contact_norm(force, curState[2]);
+  double f1 = fDirs[4], f2 = fDirs[5];
+
+  if (f1 > 2000 || f2 > 2000) {
+    ROS_ERROR("Excessive force detected.\nf1 = %lf, f2 = %lf", f1, f2);
+    miniROS::shutdown();
+    return;
+  }
+
+  // 终止条件
+  if (curState[1] <= 78) {
+    ROS_INFO("task4_grasp finish. F1 = %lf", f1);
+    wsgConfig.push({62,10});
+    task = Task::idle;
+  }
+  if (f1 > 400) {
+    curState[1] += 0.2;
+  } else {
+    // 运动控制
+    curState[0] -= cos(curState[2])*0.1;
+    curState[1] -= cos(curState[2])*0.1;
+    if (force[3] > 40) {
+      curState[2] += 0.2*deg2rad;
+    }
+  }
+
+  refJoint = plane_inv_kinematics(curState);
+
+  planner2ur(curJoint, refJoint);
 }
 
 void task_press() {
@@ -733,7 +926,7 @@ std::vector<double> calc_finger_pos(Arr3d state, double gripWidth) {
   return fingerPos;
 }
 
-// 接触面上的力控
+// 接触面上的力控: 传感器测量的力在世界坐标系下的表示(方向、大小)
 std::vector<double> contact_norm(std::vector<double> force, double theta) {
   std::vector<double> dirs(6,0), ff(2,0);
   // 传感器合力大小

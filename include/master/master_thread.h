@@ -29,6 +29,9 @@ enum class Task {
   task2_lay_down_2,
   // 任务4
   task4_press,
+  task4_rotate,
+  task4_pivot,
+  task4_grasp,
 };
 
 void planner_controller();
@@ -51,6 +54,12 @@ void task2_pivot_side_2();
 void task2_rotate_2();
 void task2_pivot_2();
 void task2_lay_down_2();
+
+// 任务4
+void task4_press();
+void task4_rotate();
+void task4_pivot();
+void task4_grasp();
 
 void actual_force(std::vector<double>& force, double theta);
 void planner2ur(THETA curJoint, THETA goalJoint);
