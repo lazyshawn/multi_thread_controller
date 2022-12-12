@@ -20,6 +20,9 @@ def read2Mat(fname):
     mat = np.mat(np.loadtxt(fname, dtype=np.float32))
     return mat
 
+def writeMat(mat,fname):
+    np.savetxt(fname, mat, fmt='%lf', delimiter='\t')
+
 def lsm(y,A):
     ks = np.linalg.inv(A.transpose()*A)*A.transpose()*f
     return ks
